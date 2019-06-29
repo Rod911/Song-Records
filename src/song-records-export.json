@@ -1,0 +1,55 @@
+{
+  "sectors": {
+    "Mangalore": {
+      "categories": ["First", "Second", "Third", "Response"],
+      "data": {
+        "2019-06-27": {
+          "First": "1",
+          "Response": "4",
+          "Second": "2",
+          "Third": "3"
+        },
+        "2019-06-28": {
+          "First": "a",
+          "Response": "d",
+          "Second": "b",
+          "Third": "c"
+        }
+      }
+    },
+    "Chennai": {
+      "categories": ["First", "Second", "Third", "Response"],
+      "data": {
+        "2019-06-27": {
+          "First": "1",
+          "Response": "4",
+          "Second": "2",
+          "Third": "3"
+        },
+        "2019-06-28": {
+          "First": "a",
+          "Response": "d",
+          "Second": "b",
+          "Third": "c"
+        }
+      }
+    },
+    "Bangalore": {
+      "categories": ["First", "Second", "Third", "Response"],
+      "data": {
+        "2019-06-27": {
+          "First": "1",
+          "Response": "4",
+          "Second": "2",
+          "Third": "3"
+        },
+        "2019-06-28": {
+          "First": "a",
+          "Response": "d",
+          "Second": "b",
+          "Third": "c"
+        }
+      }
+    }
+  }
+}
