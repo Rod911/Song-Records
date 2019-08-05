@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { ReactComponent as Loading } from './asset/Loading.svg';
 
 class Entries extends Component {
     constructor(props) {
@@ -21,14 +20,18 @@ class Entries extends Component {
         let uncategorisedUL;
 
         if(list.length === 0){
-            inputs.push(<Loading height="128px" key={"loading"}/>)
+            inputs.push(<div className="loading loading-lg" key="loading" />)
         } else {
             list.forEach(item => {
                 let value = (data ? (data[item] ? data[item] : "") : "");
                 let div = 
-                (<div key={item}>
-                    <label htmlFor={item}>{item}</label>
-                    <input type="text" id={item} onChange={this.handleChange} value={value} />
+                    (<div className="form-group" key={item}>
+                        <div className="col-3 col-md-3 col-sm-3 col-xs-12">
+                            <label className="form-label" htmlFor={item}>{item}</label>
+                        </div>
+                        <div className="col-9 col-md-9 col-sm-9 col-xs-12">
+                            <input className="form-input" type="text" id={item} onChange={this.handleChange} value={value} />
+                        </div>
                 </div>);
                 inputs.push(div);
             });
@@ -61,7 +64,7 @@ class Entries extends Component {
 
         return (
             <React.Fragment>
-                <div className="list">
+                <div className="form-horizontal">
                     {inputs}
                 </div>
                 {uncategorisedUL}

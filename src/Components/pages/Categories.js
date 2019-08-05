@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import { ReactComponent as Loading } from '../asset/Loading.svg';
 import PropTypes from 'prop-types';
+import 'spectre.css/dist/spectre-icons.css';
 
 export class Categories extends Component {
     
@@ -22,14 +22,23 @@ export class Categories extends Component {
         let user = this.props.user;
 
         if(list.length === 0){
-            categories.push(<Loading height="128px" key={"loading"}/>)
+            categories.push(<div className="loading loading-lg" key="loading" />)
         } else {
             list.forEach(item => {
-                let div = (<div key={item}>
-                    <p>{item}</p>
+                let div = (<div className="tile tile-centered" key={item}>
+                    <div className="tile-icon">
+                        <i className="icon icon-bookmark centered"></i>
+                    </div>
+                    <div className="tile-content">
+                        <div className="tile-title">
+                            {item}
+                        </div>
+                    </div>
                     {
                         user === "coordinator" && (
-                            <button onClick={this.props.del.bind(this, list.indexOf(item))}>&times;</button>
+                            <div className="tile-action">
+                                <button className="btn btn-link" onClick={this.props.del.bind(this, list.indexOf(item))}><i className="icon icon-delete" ></i></button>
+                            </div>
                         )
                     }
                 </div>);
@@ -37,16 +46,21 @@ export class Categories extends Component {
             });
         }
         return (
-            <div className="categories">
+            <div className="container categories column col-6 col-md-8 col-xs-12">
                 {
                     user === "coordinator" && (
-                        <form method="POST" onSubmit={this.onSubmit} >
-                            <input type="text" name="categoryName" id="categoryName" placeholder="New Category" required  value={this.state.newTitle} onChange={this.onChange} />
-                            <input type="submit" value="Add"/>
+                        <form method="POST" onSubmit={this.onSubmit} className="" >
+                            <div className="form-group input-group">
+                                <input className="form-input" type="text" name="categoryName" id="categoryName" placeholder="New Category" required  value={this.state.newTitle} onChange={this.onChange} />
+                                <input className="form-input btn btn-primary ml-1" type="submit" value="Add"/>
+                            </div>
+                            <div className="divider" />
                         </form>
                     )
                 }
-                {categories}
+                <div className="">
+                    {categories}
+                </div>
             </div>
         )
     }

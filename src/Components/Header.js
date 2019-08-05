@@ -1,41 +1,36 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
-
 
 class Header extends Component {
-    constructor(props){
-        super(props);
-        this.signOut = this.signOut.bind(this);
-    }
-
-    signOut = () => {
-        this.props.signOut()
-        localStorage.clear();
-    }
-
-
-    render() {
-        let user = this.props.loggedIn;
-        let userAction = [];
-        if (user) {
-            userAction= (
-                <React.Fragment>
-                    <Link to="/account" style={links} >Account</Link>
-                    <button onClick={this.signOut}>Sign Out</button>
-                </React.Fragment>
-            )
-        } else {
-            userAction=(<Link to="/account" style={links} >Log In</Link>);
+    switchTab = (currentPath) => {
+        let navs = document.getElementById("navList");
+        for (let nav of navs.children) {
+            nav.classList.remove("active");
         }
+        document.getElementById(currentPath).classList.add("active")
+    }
+
+    componentDidMount() {
+        this.switchTab(window.location.pathname)
+    }
+   
+    render() {
         
         let component = (
-            <div className="header">
+            <div className="header column" style={{ backgroundColor: "#19191B", color: "#F7F9FB"}}>
                 <header>
-                    <h2>Recorder</h2>
-                    <Link to="/" style={links} >Home</Link>|
-                    <Link to="/categories" style={links} >Categories</Link>|
-                    {userAction}
+                    <h1 style={{paddingTop: "1rem" }} >Recorder</h1>
+                    <ul className="tab tab-block" id="navList">
+                        <li className={"tab-item "} id="/">
+                            <Link to="/" onClick={ ()=> this.switchTab("/")} >Home</Link>
+                        </li>
+                        <li className={"tab-item " } id="/categories">
+                            <Link to="/categories"  onClick={ () => this.switchTab("/categories")}>Categories</Link>
+                        </li>
+                        <li className={"tab-item " } id="/account">
+                            <Link to="/account" onClick={ () => this.switchTab("/account")}>Account</Link>
+                        </li>
+                    </ul>
                 </header>
             </div>
         )
@@ -43,14 +38,4 @@ class Header extends Component {
     }
 }
 
-Header.propTypes = {
-    loggedIn: PropTypes.bool.isRequired,
-    signOut: PropTypes.func.isRequired
-}
-
 export default Header
-
-const links = {
-    color: "#00A",
-    margin: "10px"
-}

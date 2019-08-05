@@ -4,13 +4,28 @@
     <meta charset="utf-8" />
     <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
+    <meta name="theme-color" content="#19191B" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
 
-    <title>React App</title>
+    <title>Song Records</title>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
+    <script>
+      var isIE = false;
+      var ua = window.navigator.userAgent;
+      var old_ie = ua.indexOf('MSIE ');
+      var new_ie = ua.indexOf('Trident/');
+
+      if ((old_ie > -1) || (new_ie > -1)) {
+          isIE = true;
+      }
+
+      if ( isIE ) {
+          console.log("IE");
+          document.getElementById("root").innerHTML = "<h1>This app cannot run in your browser.</h1><h3>Try other modern browsers like <a href='https://www.google.com/chrome/'>Google Chrome</a>, <a href='https://www.mozilla.org/en-US/firefox/new/'>Firefox</a>, <a href='https://www.microsoft.com/en-us/windows/microsoft-edge'>Microsoft Edge</a>, <a href='https://www.apple.com/safari/'>Safari</a>, <a href='https://www.opera.com/' >Opera</a> or any <a href='https://caniuse.com/#search=es6'>ES6 compatible browsers</a></h3><h3>Click <a href='https://www.whatsmybrowser.org/' >here</a> to identify your browser</h3>"
+      }
+    </script>
   </body>
 </html>
