@@ -81,7 +81,8 @@ class App extends Component {
 	}
 
 	undoEdits = (e) => {
-		this.setState({ inputs: this.state.serverData, edits: "saved" });
+		this.setState({ inputs: {...this.state.serverData}, edits: "saved" });
+		
 	}
 
 	inputUpdate = (inp, data) => {
@@ -187,7 +188,7 @@ class App extends Component {
 												<Entries
 													categories={this.state.categories}
 													clear={this.clear}
-													data={this.state.inputs}
+													data={this.state.serverData}
 													onChange={this.inputUpdate}
 													updateDate={this.updateDate}
 												/>
@@ -196,7 +197,7 @@ class App extends Component {
 													<div className="column col-9 col-xs-12 col-ml-auto btn-group btn-group-block input-group">
 														<input type="submit" value="Save" className="btn btn-primary btn-block" />
 														<input type="button" value="Cancel" className="btn btn-secondary btn-block" onClick={this.undoEdits} />
-														<span className="input-group-addon"><i class={"icon icon-" + state}></i></span>
+														<span className="input-group-addon"><i className={"icon icon-" + state}></i></span>
 													</div>
 												</div>
 											</form>

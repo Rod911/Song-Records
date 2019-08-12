@@ -42,22 +42,33 @@ class Entries extends Component {
                 })
                 uncategorisedList = uncategorised.map(obj => {
                     return(
-                    <li key={obj[0]}>
-                        <p>{obj[0]} : {obj[1]}</p>
-                        <button type="button" key={obj[0]} onClick={this.props.clear.bind(this, obj[0])}>&times;</button> 
-                    </li>)
+                        <div key={obj[0]} className="col-12 columns" style={{paddingTop:"12px", marginLeft:"4px"}} >
+                            <div className="column col-3 col-md-3 col-sm-3 col-xs-12">
+                                <p style={{ marginBottom: "16px" }}> {obj[0]} </p>
+                            </div>
+                            <div className="column columns col-9 col-md-9 col-sm-9 col-xs-12">
+                                <div className="column col-11">
+                                    <p style={{ marginBottom: "16px" }}> {obj[1]} </p>
+                                </div>
+                                <div className="column col-1">
+                                    <button type="button" className="btn btn-secondary btn-sm" key={obj[0]} onClick={this.props.clear.bind(this, obj[0])}><i className="icon icon-cross"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    )
                 })
                 
                 uncategorisedUL = (
                     (uncategorisedList.length > 0) ? (
-                        <div>
+                        <div className="form-horizontal" >
+                            <div className="divider"></div>
                             <h4>Uncategorised</h4>
-                            <ul className="uncategorised">
+                            <div className="uncategorised-list form-group bg-secondary" style={{ marginLeft: "0.5 rem"}} >
                                 {uncategorisedList}
-                            </ul>
+                            </div>
                         </div>
                     )
-                    : ("")
+                    : (null)
                 );
             }
         }

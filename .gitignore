@@ -33,3 +33,4 @@ stale_outputs_checked
 database.rules.json
 firestore.indexes.json
 firestore.rules
+firebase-debug.log
