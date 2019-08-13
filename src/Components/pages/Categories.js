@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types';
-import 'spectre.css/dist/spectre-icons.css';
 
 export class Categories extends Component {
     

@@ -14,6 +14,7 @@ import Categories from './Components/pages/Categories';
 import config from './config';
 
 import 'spectre.css'
+import 'spectre.css/dist/spectre-icons.css';
 
 class App extends Component {
 	constructor(props) {

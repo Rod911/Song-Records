@@ -23,7 +23,8 @@ class Entries extends Component {
             inputs.push(<div className="loading loading-lg" key="loading" />)
         } else {
             list.forEach(item => {
-                let value = (data ? (data[item] ? data[item] : "") : "");
+                let value = data[item] || "";
+                // let value = (data ? (data[item] ? data[item] : "") : "");
                 let div = 
                     (<div className="form-group" key={item}>
                         <div className="col-3 col-md-3 col-sm-3 col-xs-12">
