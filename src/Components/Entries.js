@@ -2,10 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 class Entries extends Component {
-    constructor(props) {
-        super(props);
-        this.handleChange = this.handleChange.bind(this);
-    }
     
     handleChange = (e) => {
         const text = e.target.value;
@@ -86,8 +82,7 @@ class Entries extends Component {
 }
 
 Entries.propTypes = {
-    onChange: PropTypes.func.isRequired,
-    clear: PropTypes.func.isRequired
+    onChange: PropTypes.func.isRequired
 }
 
 export default Entries;

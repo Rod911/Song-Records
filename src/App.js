@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route } from 'react-router-dom';
 import firebase from 'firebase/app';
 import 'firebase/database';
 import 'firebase/firestore';
+import 'firebase/auth';
 
 import Account from './Components/pages/Account';
 import Header from './Components/Header';
@@ -30,24 +31,29 @@ class App extends Component {
 			edits: "saved"
 		};
 		firebase.initializeApp(config);
-
-
 	}
 
 	componentDidMount() {
-		let database = firebase.database();
-		let rootRef = database.ref("sectors");
-		let userid = localStorage.getItem('user');
-		if (userid) {
-			let sector = localStorage.getItem('sector');
-			let name = localStorage.getItem('name');
-			let type = localStorage.getItem('type');
-			this.setState({ user: { id: userid, name: name, sector: sector, type: type }, pass: true })
-			let categoriesRef = rootRef.child(sector + "/categories");
-			categoriesRef.on("value", snap => {
-				this.setState({ categories: snap.val() });
-			});
-		}
+		const database = firebase.database();
+		const rootRef = database.ref("sectors");
+		firebase.auth().onAuthStateChanged((user) => {
+			if (user) {
+				let sector = localStorage.getItem('sector');
+				let name = localStorage.getItem('name');
+				let type = localStorage.getItem('type');
+				let userid = localStorage.getItem('user');
+				if (userid) {	
+					this.setState({ user: { id: userid, name: name, sector: sector, type: type }, pass: true });
+					
+					let categoriesRef = rootRef.child(sector + "/categories");
+					categoriesRef.on("value", snap => {
+						this.setState({ categories: snap.val() });
+					});
+				}
+			} else {
+				this.setState({ user: { id: null, name: "" } });
+			}
+		});
 	}
 
 	del = (id) => {
@@ -102,69 +108,90 @@ class App extends Component {
 		let data = firebase.database().ref("sectors/" + this.state.user.sector + "/data").child(date);
 		data.on("value", snap => {
 			let inputs = (snap.val() || {})
-			this.setState({ inputs: { ...inputs }, serverData: { ...inputs } })
+			this.setState({ inputs: { ...inputs }, serverData: { ...inputs }, edits: "saved"})
 		})
 	}
 
 	loginFormSubmit = (form) => {
-		let firestore = firebase.firestore();
-		let usersRef = firestore.collection("users");
-		let query = usersRef.where("id", "==", form[0]);
-		query.get().then(snapshot => {
-			snapshot.forEach(doc => {
-				if (doc.id) {
-					let user = doc.data();
-					if (user.pass === form[1]) {
-						// Logged in
-						let data = firebase.database().ref("sectors/" + user.sector + "/categories");
-						data.on("value", snap => {
-							this.setState({ categories: snap.val(), user: { id: user.id, name: user.name, sector: user.sector, type: user.type }, pass: true, attemptLogin: "" });
-						})
-						localStorage.setItem('user', user.id);
-						localStorage.setItem('name', user.name);
-						localStorage.setItem('sector', user.sector);
-						localStorage.setItem('type', user.type);
-						return;
-					} else {
-						this.setState({ attemptLogin: "Incorrect password!", categories: [], date: null, inputs: {}, pass: false, user: { id: null } });
-					}
-				}
-			});
-			if (snapshot.docs.length === 0) {
-				this.setState({ attemptLogin: "User doesn't exist, check email id", categories: [], date: null, inputs: {}, pass: false, user: { id: null } })
-			}
-		});
-	}
+		const [formEmail, formPass] = [form[0], form[1]];
+		firebase.auth().signInWithEmailAndPassword(formEmail, formPass)
+			.then((userData) => {
+				const userEmail = userData.user.email;
+				const uid = userData.user.uid;
+				const userName = userData.user.displayName;
+				let userDBdata = firebase.database().ref("users").child(uid);
+				userDBdata.on("value", snap => {
+					const userSector = snap.child(`sector`).val();
+					const userClaims = snap.child(`claims`).val();
+					let categories = [];
+					const sectorCategoriesDB = firebase.database().ref("sectors/" + userSector + "/categories");
+					sectorCategoriesDB.once("value", snap => {
+						categories = snap.val();
 
-	clear = (id) => {
-		let ref = firebase.database().ref("sectors/" + this.state.user.sector + "/data/" + this.state.date + "/" + id);
-		ref.remove()
-			.then(() => {
-				// console.log("success");
+						this.setState({
+							categories: categories,
+							user: {
+								id: userEmail,
+								name: userName,
+								sector: userSector,
+								type: userClaims
+							},
+							pass: true,
+							attemptLogin: ""
+						});
+						localStorage.setItem('user', userEmail);
+						localStorage.setItem('name', userName);
+						localStorage.setItem('sector', userSector);
+						localStorage.setItem('type', userClaims);
+					});
+				});
 			})
-			.catch(() => {
-				// console.log("failed");
-			})
+			.catch((error) => {
+				// Handle Errors here.
+				// const errorCode = error.code;
+				let errorMessage = "";
+				switch (error.code) {
+					case "auth/wrong-password":
+						errorMessage = "The password is invalid.";
+						break;
+					case "auth/user-not-found":
+						errorMessage = "There is no user corresponding to this email. The user may have been deleted.";
+						break;
+					default:
+						errorMessage = error.message;
+				}
+
+				this.setState({
+					attemptLogin: errorMessage,
+					categories: [],
+					date: null,
+					inputs: {},
+					pass: false,
+					user: { id: null }
+				});
+			});
+		// Auth complete
 	}
 
 	signOut = (e) => {
 		this.setState({ categories: [], date: null, inputs: {}, pass: false, user: { id: null } })
 		localStorage.clear();
+		firebase.auth().signOut();
 	}
 
 	render() {
-		let state = "";
+		let stateIcon = "";
 		switch (this.state.edits) {
 			case "saved":
-				state = "check";
+				stateIcon = "check";
 				break;
 			case "modified":
-				state = "flag";
+				stateIcon = "flag";
 				break;
 			case "saving":
-				state = "time";
+				stateIcon = "time";
 				break;
-			default: state = "";
+			default: stateIcon = "";
 		}
 		return (
 			<Router>
@@ -180,7 +207,6 @@ class App extends Component {
 										<div className="container dataForm column col-8 col-md-12">
 											<form method="post" onSubmit={this.saveData} >
 												<DatePicker
-													pickDate={this.pickDate}
 													updateDate={this.updateDate}
 													date={this.state.date}
 													className="form-group"
@@ -188,8 +214,7 @@ class App extends Component {
 												<div className="divider" />
 												<Entries
 													categories={this.state.categories}
-													clear={this.clear}
-													data={this.state.serverData}
+													data={{...this.state.inputs}}
 													onChange={this.inputUpdate}
 													updateDate={this.updateDate}
 												/>
@@ -198,7 +223,7 @@ class App extends Component {
 													<div className="column col-9 col-xs-12 col-ml-auto btn-group btn-group-block input-group">
 														<input type="submit" value="Save" className="btn btn-primary btn-block" />
 														<input type="button" value="Cancel" className="btn btn-secondary btn-block" onClick={this.undoEdits} />
-														<span className="input-group-addon"><i className={"icon icon-" + state}></i></span>
+														<span className="input-group-addon"><i className={"icon icon-" + stateIcon}></i></span>
 													</div>
 												</div>
 											</form>
@@ -239,10 +264,12 @@ class App extends Component {
 								loggedIn={this.state.pass}
 								attemptLogin={this.state.attemptLogin}
 								user={this.state.user}
+								auth={firebase.auth().currentUser}
 								loginFormSubmit={this.loginFormSubmit}
 								signOut={this.signOut}
 							/>
-						)} />
+						)}
+					/>
 				</div>
 			</Router>		
 		);
