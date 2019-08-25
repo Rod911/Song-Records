@@ -1,21 +1,20 @@
-import React, { Component } from 'react';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import React, { Component } from "react";
+import { BrowserRouter as Router, Route } from "react-router-dom";
 
-import firebase from 'firebase/app';
-import 'firebase/database';
-import 'firebase/firestore';
-import 'firebase/auth';
+import firebase from "firebase/app";
+import "firebase/database";
+import "firebase/auth";
 
-import Account from './Components/pages/Account';
-import Header from './Components/Header';
-import DatePicker from './Components/DatePicker';
-import Entries from './Components/Entries';
-import Categories from './Components/pages/Categories';
+import Account from "./Components/pages/Account";
+import Header from "./Components/Header";
+import DatePicker from "./Components/DatePicker";
+import Entries from "./Components/Entries";
+import Categories from "./Components/pages/Categories";
 
-import config from './config';
+import config from "./config";
 
-import 'spectre.css'
-import 'spectre.css/dist/spectre-icons.css';
+import "spectre.css";
+import "spectre.css/dist/spectre-icons.css";
 
 class App extends Component {
 	constructor(props) {
@@ -38,10 +37,10 @@ class App extends Component {
 		const rootRef = database.ref("sectors");
 		firebase.auth().onAuthStateChanged((user) => {
 			if (user) {
-				let sector = localStorage.getItem('sector');
-				let name = localStorage.getItem('name');
-				let type = localStorage.getItem('type');
-				let userid = localStorage.getItem('user');
+				let sector = localStorage.getItem("sector");
+				let name = localStorage.getItem("name");
+				let type = localStorage.getItem("type");
+				let userid = localStorage.getItem("user");
 				if (userid) {	
 					this.setState({ user: { id: userid, name: name, sector: sector, type: type }, pass: true });
 					
@@ -64,7 +63,7 @@ class App extends Component {
 			})
 			.catch(() => {
 				// console.log("failed");
-			})
+			});
 	}
 
 	addCategory = (id) => {
@@ -83,8 +82,8 @@ class App extends Component {
 			.catch(e => {
 				this.setState({ edits: "failed" });
 				console.log(e);
-			})
-		this.setState({ edits: "saving" })
+			});
+		this.setState({ edits: "saving" });
 	}
 
 	undoEdits = (e) => {
@@ -104,12 +103,12 @@ class App extends Component {
 	}
 
 	updateDate = (date) => {
-		this.setState({ date: date })
+		this.setState({ date: date });
 		let data = firebase.database().ref("sectors/" + this.state.user.sector + "/data").child(date);
 		data.on("value", snap => {
-			let inputs = (snap.val() || {})
-			this.setState({ inputs: { ...inputs }, serverData: { ...inputs }, edits: "saved"})
-		})
+			let inputs = (snap.val() || {});
+			this.setState({ inputs: { ...inputs }, serverData: { ...inputs }, edits: "saved"});
+		});
 	}
 
 	loginFormSubmit = (form) => {
@@ -121,8 +120,8 @@ class App extends Component {
 				const userName = userData.user.displayName;
 				let userDBdata = firebase.database().ref("users").child(uid);
 				userDBdata.on("value", snap => {
-					const userSector = snap.child(`sector`).val();
-					const userClaims = snap.child(`claims`).val();
+					const userSector = snap.child("sector").val();
+					const userClaims = snap.child("claims").val();
 					let categories = [];
 					const sectorCategoriesDB = firebase.database().ref("sectors/" + userSector + "/categories");
 					sectorCategoriesDB.once("value", snap => {
@@ -139,10 +138,10 @@ class App extends Component {
 							pass: true,
 							attemptLogin: ""
 						});
-						localStorage.setItem('user', userEmail);
-						localStorage.setItem('name', userName);
-						localStorage.setItem('sector', userSector);
-						localStorage.setItem('type', userClaims);
+						localStorage.setItem("user", userEmail);
+						localStorage.setItem("name", userName);
+						localStorage.setItem("sector", userSector);
+						localStorage.setItem("type", userClaims);
 					});
 				});
 			})
@@ -151,14 +150,14 @@ class App extends Component {
 				// const errorCode = error.code;
 				let errorMessage = "";
 				switch (error.code) {
-					case "auth/wrong-password":
-						errorMessage = "The password is invalid.";
-						break;
-					case "auth/user-not-found":
-						errorMessage = "There is no user corresponding to this email. The user may have been deleted.";
-						break;
-					default:
-						errorMessage = error.message;
+				case "auth/wrong-password":
+					errorMessage = "The password is invalid.";
+					break;
+				case "auth/user-not-found":
+					errorMessage = "There is no user corresponding to this email. The user may have been deleted.";
+					break;
+				default:
+					errorMessage = error.message;
 				}
 
 				this.setState({
@@ -174,7 +173,7 @@ class App extends Component {
 	}
 
 	signOut = (e) => {
-		this.setState({ categories: [], date: null, inputs: {}, pass: false, user: { id: null } })
+		this.setState({ categories: [], date: null, inputs: {}, pass: false, user: { id: null } });
 		localStorage.clear();
 		firebase.auth().signOut();
 	}
@@ -182,59 +181,59 @@ class App extends Component {
 	render() {
 		let stateIcon = "";
 		switch (this.state.edits) {
-			case "saved":
-				stateIcon = "check";
-				break;
-			case "modified":
-				stateIcon = "flag";
-				break;
-			case "saving":
-				stateIcon = "time";
-				break;
-			default: stateIcon = "";
+		case "saved":
+			stateIcon = "check";
+			break;
+		case "modified":
+			stateIcon = "flag";
+			break;
+		case "saving":
+			stateIcon = "time";
+			break;
+		default: stateIcon = "";
 		}
 		return (
 			<Router>
 				<div className="app " style={{paddingBottom: "1rem",}}>
-					<Header
-						className="row"
-					/>
-					<Route exact path="/" render={props => (
-						<React.Fragment >
-							{
-								this.state.pass !== false ?
-									(
-										<div className="container dataForm column col-8 col-md-12">
-											<form method="post" onSubmit={this.saveData} >
-												<DatePicker
-													updateDate={this.updateDate}
-													date={this.state.date}
-													className="form-group"
-												/>
-												<div className="divider" />
-												<Entries
-													categories={this.state.categories}
-													data={{...this.state.inputs}}
-													onChange={this.inputUpdate}
-													updateDate={this.updateDate}
-												/>
-												<div className="divider" />
-												<div className="columns">
-													<div className="column col-9 col-xs-12 col-ml-auto btn-group btn-group-block input-group">
-														<input type="submit" value="Save" className="btn btn-primary btn-block" />
-														<input type="button" value="Cancel" className="btn btn-secondary btn-block" onClick={this.undoEdits} />
-														<span className="input-group-addon"><i className={"icon icon-" + stateIcon}></i></span>
+					<Header className="row" />
+					<Route
+						exact path="/"
+						render={props => (
+							<React.Fragment >
+								{
+									this.state.pass !== false ?
+										(
+											<div className="container dataForm column col-8 col-md-12">
+												<form method="post" onSubmit={this.saveData} >
+													<DatePicker
+														updateDate={this.updateDate}
+														date={this.state.date}
+														className="form-group"
+													/>
+													<div className="divider" />
+													<Entries
+														categories={this.state.categories}
+														data={{...this.state.inputs}}
+														onChange={this.inputUpdate}
+														updateDate={this.updateDate}
+													/>
+													<div className="divider" />
+													<div className="columns">
+														<div className="column col-9 col-xs-12 col-ml-auto btn-group btn-group-block input-group">
+															<input type="submit" value="Save" className="btn btn-primary btn-block" />
+															<input type="button" value="Cancel" className="btn btn-secondary btn-block" onClick={this.undoEdits} />
+															<span className="input-group-addon"><i className={"icon icon-" + stateIcon}></i></span>
+														</div>
 													</div>
-												</div>
-											</form>
-										</div>
-									) : (
-										<h2>Sign in to continue</h2>
-									)
-							}
-						</React.Fragment>
-					)} />
-
+												</form>
+											</div>
+										) : (
+											<h2>Sign in to continue</h2>
+										)
+								}
+							</React.Fragment>
+						)}
+					/>
 
 					<Route
 						path="/categories"
