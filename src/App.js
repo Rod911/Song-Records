@@ -10,6 +10,7 @@ import Header from "./Components/Header";
 import DatePicker from "./Components/DatePicker";
 import Entries from "./Components/Entries";
 import Categories from "./Components/pages/Categories";
+import ForgotPass from './Components/pages/ForgotPass';
 
 import config from "./config";
 
@@ -172,6 +173,52 @@ class App extends Component {
 		// Auth complete
 	}
 
+	verifyUser = () => {
+		let actionCodeSettings = {
+			url: 'https://song-records.web.app/',
+			// iOS: {
+			// 	bundleId: 'com.example.ios'
+			// },
+			// android: {
+			// 	packageName: 'com.example.android',
+			// 	installApp: true,
+			// 	minimumVersion: '12'
+			// },
+			handleCodeInApp: true,
+			// When multiple custom dynamic link domains are defined, specify which
+			// one to use.
+			continueUrl: 'https://song-records.web.app'
+		};
+		firebase.auth().currentUser.sendEmailVerification(actionCodeSettings).then(function () {
+			alert("Check your email");
+		}).catch(function (error) {
+			alert("Unknown error:" + error);
+		});
+	}
+
+	forgotSubmit = (emailAddress) => {
+		let actionCodeSettings = {
+			url: 'https://song-records.web.app/?email=' + emailAddress,
+			// iOS: {
+			// 	bundleId: 'com.example.ios'
+			// },
+			// android: {
+			// 	packageName: 'com.example.android',
+			// 	installApp: true,
+			// 	minimumVersion: '12'
+			// },
+			handleCodeInApp: true,
+			// When multiple custom dynamic link domains are defined, specify which
+			// one to use.
+			continueUrl: 'https://song-records.web.app'
+		};
+		firebase.auth().sendPasswordResetEmail(emailAddress, actionCodeSettings).then(function () {
+			alert("Check your email");
+		}).catch(function (error) {
+			alert("Unknown error:" + error);
+		});
+	}
+
 	signOut = (e) => {
 		this.setState({ categories: [], date: null, inputs: {}, pass: false, user: { id: null } });
 		localStorage.clear();
@@ -257,7 +304,7 @@ class App extends Component {
 					/>
 
 					<Route
-						path="/account"
+						exact path="/account"
 						render={props => (
 							<Account
 								loggedIn={this.state.pass}
@@ -266,6 +313,15 @@ class App extends Component {
 								auth={firebase.auth().currentUser}
 								loginFormSubmit={this.loginFormSubmit}
 								signOut={this.signOut}
+								verifyUser={this.verifyUser}
+							/>
+						)}
+					/>
+					<Route
+						exact path="/account/forgot"
+						render={props => (
+							<ForgotPass
+								forgotSubmit={this.forgotSubmit}
 							/>
 						)}
 					/>

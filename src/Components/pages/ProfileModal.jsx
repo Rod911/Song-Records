@@ -63,7 +63,7 @@ export class ProfileModal extends Component {
         const user = this.props.user;
         const auth = this.props.auth;
         const emailVerified = auth.emailVerified;
-        const userName = user.name || "New User";
+        const userName = (user.name === null || user.name === "null") ? "New User" : user.name;
         const initials = userName.split(' ').map(x => x.charAt(0)).join('').substr(0, 2).toUpperCase();
         return (
             <div className="modal modal-lg" id="profile-modal">
@@ -87,7 +87,7 @@ export class ProfileModal extends Component {
                                         <div className="tile tile-centered" style={tileStyle} >
                                             <div className="tile-content">
                                                 <div className="tile-title text-bold">E-mail</div>
-                                                <div className="tile-subtitle" id="inpEmail" >{user.id} {emailVerified ? "(Email Verified)" : (<button className="btn btn-sm" role="button">Verify</button>)}</div>
+                                                <div className="tile-subtitle" id="inpEmail" >{user.id} {emailVerified ? "(Email Verified)" : (<button className="btn btn-sm" role="button" onClick={() => { this.props.verify()}}>Verify</button>)}</div>
                                             </div>
                                             <div className="tile-action">
                                                 <button role="button" className="btn btn-link btn-action btn-lg tooltip tooltip-left" data-tooltip="Edit E-mail" onClick={(e) => this.editContent("inpEmail", "email", e)} ><i className="icon icon-edit"></i></button>
@@ -135,7 +135,8 @@ export class ProfileModal extends Component {
 
 ProfileModal.propTypes = {
     user: PropTypes.object,
-    auth: PropTypes.object
+    auth: PropTypes.object,
+    verify: PropTypes.func.isRequired
 }
 
 const tileStyle = {

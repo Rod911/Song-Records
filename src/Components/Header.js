@@ -11,7 +11,7 @@ class Header extends Component {
 	}
 
 	componentDidMount() {
-		this.switchTab(window.location.pathname);
+		// this.switchTab(window.location.pathname);
 	}
    
 	render() {

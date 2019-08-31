@@ -1,5 +1,6 @@
 /* eslint-disable */
 import React, { Component } from 'react';
+import { Link } from "react-router-dom";
 import PropTypes from 'prop-types';
 import ProfileModal from './ProfileModal';
 import Users from './Users';
@@ -45,6 +46,9 @@ class Account extends Component {
                             <div className="form-group">
                                 <input className="btn btn-block" type="submit" value="Login" />
                             </div>
+                            <div className="form-group">
+                                <Link to="/account/forgot" className="btn btn-link btn-block" >Forgot password?</Link>
+                            </div>
                         {
                             attemptLogin !== "" &&
                             (<div className="error" >
@@ -56,7 +60,7 @@ class Account extends Component {
                 </div>
             );
         } else {
-            const userName = user.name === null ? "New User" : user.name;
+            const userName = (user.name === null || user.name === "null") ? "New User" : user.name;
             const initials = userName.split(' ').map(x => x.charAt(0)).join('').substr(0, 2).toUpperCase();
             const accoutDetails = (
                 <div className="container account-info column col-4 col-lg-6 col-md-8 col-xs-12">
@@ -85,6 +89,7 @@ class Account extends Component {
                     <ProfileModal
                         user={user}
                         auth={this.props.auth}
+                        verify={this.props.verifyUser}
                         // Prop-drilling 💔
                     />
                     {
@@ -106,7 +111,8 @@ Account.propTypes = {
     user: PropTypes.object,
     auth: PropTypes.object,
     loginFormSubmit: PropTypes.func.isRequired,
-    signOut: PropTypes.func.isRequired
+    signOut: PropTypes.func.isRequired,
+    verifyUser: PropTypes.func.isRequired
 }
 
 export default Account

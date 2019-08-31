@@ -20,12 +20,12 @@ export class Users extends Component {
         const sector = localStorage.getItem("sector");
         rootRef.orderByChild("sector").equalTo(sector).on("child_added", snap => {
             this.setState(oldState => ({
-                users: [...oldState.users, snap.val()]
+                users: [...oldState.users, {...snap.val(), key: snap.key}]
             }))
         });
-        rootRef.equalTo(sector).on('child_removed', oldChildSnapshot => {
+        rootRef.on('child_removed', oldChildSnapshot => {
             let removed = this.state.users.filter(user => user.email !== oldChildSnapshot.val().email)
-            this.setState({users: removed})
+            this.setState({ users: removed });
         });
     }
 
@@ -50,8 +50,28 @@ export class Users extends Component {
         
         firebase.auth().createUserWithEmailAndPassword(userEmail, randomPassword)
             .then(res => {
+                let actionCodeSettings = {
+                    url: 'https://song-records.web.app/?email=' + userEmail,
+                    // iOS: {
+                    // 	bundleId: 'com.example.ios'
+                    // },
+                    // android: {
+                    // 	packageName: 'com.example.android',
+                    // 	installApp: true,
+                    // 	minimumVersion: '12'
+                    // },
+                    handleCodeInApp: true,
+                    // When multiple custom dynamic link domains are defined, specify which
+                    // one to use.
+                    continueUrl: 'https://song-records.web.app'
+                };
                 // User created
                 firebase.database().ref("users/" + res.user.uid).set(userData);
+                firebase.auth().sendPasswordResetEmail(userEmail, actionCodeSettings).then(function () {
+                    alert("Ask user to reset password using link in email");
+                }).catch(function (error) {
+                    alert("Unknown error:" + error);
+                });
             })
             .then(() => {
                 // Added to DB
@@ -68,7 +88,7 @@ export class Users extends Component {
     }
 
     deleteUser = (e) => {
-        console.log(e);
+        firebase.database().ref("users/" + e).set(null);
     }
 
     userList = () => {
@@ -87,8 +107,8 @@ export class Users extends Component {
                                         {user.email}
                                     </p>
                                 </div>
-                                <div className="tile-action">
-                                    <button className="btn btn-link" disabled={disabled} onClick={() => { this.deleteUser(user.email) }} ><i className="icon icon-delete"></i></button>
+                                <div className="tile-action" title="Under construction 💙">
+                                    <button className="btn btn-link" disabled={"disabled"/*disabled*/} onClick={() => { this.deleteUser(user.key) }} ><i className="icon icon-delete"></i></button>
                                 </div>
                             </div>
                         )
@@ -129,8 +149,9 @@ export class Users extends Component {
                                     required
                                 >
                                     <option value=""></option>
-                                    <option value="coordinator">Full</option>
-                                    <option value="contributor">Basic</option>
+                                    <option value="admin">Admin</option>
+                                    <option value="coordinator">Coordinator</option>
+                                    <option value="contributor">Contributor</option>
                                 </select>
                                 <button className="btn btn-primary input-group-btn btn-sm">Add</button>
                             </div>
