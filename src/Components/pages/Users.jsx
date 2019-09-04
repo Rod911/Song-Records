@@ -98,7 +98,7 @@ export class Users extends Component {
                 this.state.users.length === 0 ?
                     <div className="loading loading-lg" key="loading" /> :
                     this.state.users.map(user => {
-                        const disabled = (this.props.currentUser === user.email);
+                        // const disabled = (this.props.currentUser === user.email);
                         return (
                             <div className="tile" key={user.email} >
                                 <div className="tile-icon"><i className="icon icon-people"></i></div>

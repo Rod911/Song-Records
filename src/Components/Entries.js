@@ -15,22 +15,32 @@ class Entries extends Component {
 		let uncategorisedList = [];
 		let uncategorisedUL;
 
-		if(list.length === 0){
+		if(list[0] === false){
 			inputs.push(<div className="loading loading-lg" key="loading" />);
 		} else {
+			if (list[0] === null) {
+				inputs.push(
+					<div className="empty" key="empty-list">
+						<p className="empty-title h5">Category list is empty</p>
+						<p className="empty-subtitle">Add some in categories tab</p>
+					</div>
+				);
+			}
+		
 			list.forEach(item => {
-				let value = data[item] || "";
-				// let value = (data ? (data[item] ? data[item] : "") : "");
-				let div = 
+				if (item !== null) {
+					let value = data[item];
+					let div = 
 					(<div className="form-group" key={item}>
 						<div className="col-3 col-md-3 col-sm-3 col-xs-12">
 							<label className="form-label" htmlFor={item}>{item}</label>
 						</div>
 						<div className="col-9 col-md-9 col-sm-9 col-xs-12">
-							<input className="form-input" type="text" id={item} onChange={this.handleChange} value={value} />
+							<input className="form-input c-input" type="text" id={item} onChange={this.handleChange} value={value || ''} />
 						</div>
 					</div>);
-				inputs.push(div);
+					inputs.push(div);
+				}
 			});
 			if(data){
 				let dataArray = Object.entries(data);
@@ -39,7 +49,7 @@ class Entries extends Component {
 				});
 				uncategorisedList = uncategorised.map(obj => {
 					return(
-						<div key={obj[0]} className="col-12 columns" style={{paddingTop:"12px", marginLeft:"4px"}} >
+						<div key={obj[0]} className="col-12 columns" style={{paddingTop:"12px", marginLeft:"4px"}}>
 							<div className="column col-3 col-md-3 col-sm-3 col-xs-12">
 								<p style={{ marginBottom: "16px" }}> {obj[0]} </p>
 							</div>
@@ -48,7 +58,7 @@ class Entries extends Component {
 									<p style={{ marginBottom: "16px" }}> {obj[1]} </p>
 								</div>
 								<div className="column col-1">
-									<button type="button" className="btn btn-secondary btn-sm" key={obj[0]} onClick={this.props.clear.bind(this, obj[0])}><i className="icon icon-cross"></i></button>
+									<button type="button" className="btn btn-secondary btn-sm" key={obj[0]} onClick={() => { this.props.clear(obj[0]) }}><i className="icon icon-cross"></i></button>
 								</div>
 							</div>
 						</div>
@@ -60,7 +70,7 @@ class Entries extends Component {
 						<div className="form-horizontal" >
 							<div className="divider"></div>
 							<h4>Uncategorised</h4>
-							<div className="uncategorised-list form-group bg-secondary" style={{ marginLeft: "0.5 rem"}} >
+							<div className="uncategorised-list form-group bg-secondary tooltip" style={{ marginLeft: "0.5 rem" }} data-tooltip="Read only content, delete item if necessary"  >
 								{uncategorisedList}
 							</div>
 						</div>

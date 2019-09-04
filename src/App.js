@@ -11,6 +11,7 @@ import DatePicker from "./Components/DatePicker";
 import Entries from "./Components/Entries";
 import Categories from "./Components/pages/Categories";
 import ForgotPass from './Components/pages/ForgotPass';
+import Footer from './Components/Footer';
 
 import config from "./config";
 
@@ -21,14 +22,15 @@ class App extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			categories: [],
+			categories: [false],
 			inputs: {},
 			serverData: {},
 			date: null,
 			user: { id: null },
 			pass: false,
 			attemptLogin: "",
-			edits: "saved"
+			edits: "saved",
+			duplicateCategoryAdded: false
 		};
 		firebase.initializeApp(config);
 	}
@@ -47,7 +49,11 @@ class App extends Component {
 					
 					let categoriesRef = rootRef.child(sector + "/categories");
 					categoriesRef.on("value", snap => {
-						this.setState({ categories: snap.val() });
+						let filteredArray = [null];
+						if (snap.val()) {
+							filteredArray = snap.val().filter( el => el);
+						}
+						this.setState({ categories: [...filteredArray] });
 					});
 				}
 			} else {
@@ -56,21 +62,24 @@ class App extends Component {
 		});
 	}
 
-	del = (id) => {
-		let ref = firebase.database().ref("sectors/" + this.state.user.sector + "/categories/" + id);
-		ref.remove()
-			.then(() => {
-				// console.log("success");
-			})
-			.catch(() => {
-				// console.log("failed");
-			});
+	del = id => {
+		let filteredArray = this.state.categories.filter(el => el && el !== id);
+		this.setCategories(filteredArray);
 	}
 
-	addCategory = (id) => {
-		let total = this.state.categories.length;
-		firebase.database().ref("sectors/" + this.state.user.sector + "/categories/" + total).set(id);
+	addCategory = id => {
+		if (this.state.categories.includes(id)) {
+			this.setState({ duplicateCategoryAdded: true })
+			setTimeout(() => this.setState({ duplicateCategoryAdded: false }) ,3000)
+			return
+		} else
+			this.setState({duplicateCategoryAdded: false})
+			
+		const categories = [...this.state.categories, id];
+		this.setCategories(categories);
 	}
+
+	setCategories = categories => firebase.database().ref("sectors/" + this.state.user.sector + "/categories").set(categories);
 
 	saveData = (e) => {
 		e.preventDefault();
@@ -87,9 +96,18 @@ class App extends Component {
 		this.setState({ edits: "saving" });
 	}
 
-	undoEdits = (e) => {
-		this.setState({ inputs: {...this.state.serverData}, edits: "saved" });
-		
+	undoEdits = () => this.setState({ inputs: {...this.state.serverData}, edits: "saved" });
+
+	clear = (id) => {
+		// Delete uncategorised items
+		let ref = firebase.database().ref("sectors/" + this.state.user.sector + "/data/" + this.state.date + "/" + id);
+		ref.remove()
+			.then(() => {
+				// console.log("success");
+			})
+			.catch(() => {
+				// console.log("failed");
+			})
 	}
 
 	inputUpdate = (inp, data) => {
@@ -198,7 +216,7 @@ class App extends Component {
 
 	forgotSubmit = (emailAddress) => {
 		let actionCodeSettings = {
-			url: 'https://song-records.web.app/?email=' + emailAddress,
+			url: 'https://song-records.web.app/account?email=' + emailAddress,
 			// iOS: {
 			// 	bundleId: 'com.example.ios'
 			// },
@@ -210,7 +228,7 @@ class App extends Component {
 			handleCodeInApp: true,
 			// When multiple custom dynamic link domains are defined, specify which
 			// one to use.
-			continueUrl: 'https://song-records.web.app'
+			continueUrl: 'https://song-records.web.app/account'
 		};
 		firebase.auth().sendPasswordResetEmail(emailAddress, actionCodeSettings).then(function () {
 			alert("Check your email");
@@ -263,6 +281,7 @@ class App extends Component {
 														data={{...this.state.inputs}}
 														onChange={this.inputUpdate}
 														updateDate={this.updateDate}
+														clear={this.clear}
 													/>
 													<div className="divider" />
 													<div className="columns">
@@ -294,6 +313,8 @@ class App extends Component {
 												user={this.state.user.type}
 												del={this.del}
 												addCategory={this.addCategory}
+												duplicateCategoryAdded={this.state.duplicateCategoryAdded}
+												rearrange={this.setCategories}
 											/>
 										) : (
 											<h2>Sign in to continue</h2>
@@ -326,7 +347,8 @@ class App extends Component {
 						)}
 					/>
 				</div>
-			</Router>		
+				<Footer />
+			</Router>
 		);
 	}
 }
