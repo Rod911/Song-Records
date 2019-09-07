@@ -5,6 +5,7 @@ import {
 	sortableElement,
 	sortableHandle,
 } from 'react-sortable-hoc';
+import { Link } from 'react-router-dom';
 
 const arrayMove = (arr, old_index, new_index) => {
 	if (new_index >= arr.length) {
@@ -14,7 +15,7 @@ const arrayMove = (arr, old_index, new_index) => {
 		}
 	}
 	arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
-	return arr; // for testing
+	return arr;
 };
 
 const DragHandle = sortableHandle(() =>
@@ -48,7 +49,6 @@ export class Categories extends Component {
 
 		this.setState({ categories: this.props.categories });
 		this.setState(({ categories }) => ({
-			
 			categories: arrayMove(categories, oldIndex, newIndex),
 		}));
 		this.props.rearrange(this.state.categories);
@@ -101,59 +101,56 @@ export class Categories extends Component {
 			});
 		}
 		return (
-			<>
-				<div className="container categories column col-6 col-md-8 col-xs-12">
-					{(user === "coordinator" || user === "admin") && (
-						<form method="POST" onSubmit={this.onSubmit} className="">
-							<div className="form-group input-group">
-								<input
-									className="form-input"
-									type="text"
-									name="categoryName"
-									id="categoryName"
-									placeholder="New Category"
-									required
-									value={this.state.newTitle}
-									onChange={this.onChange}
-								/>
-								<input
-									className="form-input btn btn-primary ml-1"
-									type="submit"
-									value="Add"
-								/>
-							</div>
-							{
-								(this.props.duplicateCategoryAdded) && (
-								<div className="toast toast-warning">
-									That name is already taken
-								</div>)
-							}
-							<div className="divider" />
-						</form>
-					)}
+			<div className="container categories column col-6 col-md-8 col-xs-12">
+				{(user === "coordinator" || user === "admin") && (
+					<form method="POST" onSubmit={this.onSubmit} className="">
+						<div className="form-group input-group">
+							<input
+								className="form-input"
+								type="text"
+								name="categoryName"
+								id="categoryName"
+								placeholder="New Category"
+								required
+								value={this.state.newTitle}
+								onChange={this.onChange}
+							/>
+							<input
+								className="input-group-btn btn btn-primary"
+								type="submit"
+								value="Add"
+							/>
+						</div>
+						{
+							(this.props.duplicateCategoryAdded) && (
+							<div className="toast toast-warning">
+								That name is already taken
+							</div>)
+						}
+						<div className="divider" />
+					</form>
+				)}
 
-					<SortableContainer onSortEnd={this.onSortEnd} useDragHandle>
-							{categories.map((value, index) => {
-								let key = "";
-							try {
-								key = value;
-								key = value.props.children[0].key;
-								
-							} finally {
-								return (
-									<SortableItem key={key} index={index} value={value} />
-								)
-							}
+				<SortableContainer onSortEnd={this.onSortEnd} useDragHandle>
+						{categories.map((value, index) => {
+							let key = "";
+						try {
+							key = value;
+							key = value.props.children[0].key;
 							
-						})}
-					</SortableContainer>
-					</div>
-				</>
+						} finally {
+							return (
+								<SortableItem key={key} index={index} value={value} />
+							)
+						}
+						
+					})}
+				</SortableContainer>
+				<Link className="btn btn-link btn-block" to="/songs" >Go to song list</Link>
+			</div>
 		);
 	}
 }
-
-
 
 Categories.propTypes = {
 	categories: PropTypes.array.isRequired,

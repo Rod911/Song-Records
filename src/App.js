@@ -5,12 +5,15 @@ import firebase from "firebase/app";
 import "firebase/database";
 import "firebase/auth";
 
+import Categories from "./Components/pages/Categories";
 import Account from "./Components/pages/Account";
+import ForgotPass from './Components/pages/ForgotPass';
+import Songs from './Components/pages/Songs';
+import AddSong from './Components/pages/AddSong';
+
 import Header from "./Components/Header";
 import DatePicker from "./Components/DatePicker";
 import Entries from "./Components/Entries";
-import Categories from "./Components/pages/Categories";
-import ForgotPass from './Components/pages/ForgotPass';
 import Footer from './Components/Footer';
 
 import config from "./config";
@@ -19,6 +22,7 @@ import "spectre.css";
 import "spectre.css/dist/spectre-icons.css";
 
 class App extends Component {
+	
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -30,7 +34,8 @@ class App extends Component {
 			pass: false,
 			attemptLogin: "",
 			edits: "saved",
-			duplicateCategoryAdded: false
+			duplicateCategoryAdded: false,
+			songAdded: { new: false, added: false, data: null, err: ""}
 		};
 		firebase.initializeApp(config);
 	}
@@ -243,6 +248,23 @@ class App extends Component {
 		firebase.auth().signOut();
 	}
 
+	addSongSubmit = (title, lyrics) => {
+		let lastId;
+		firebase.database().ref("sectors/" + this.state.user.sector + "/songs").limitToLast(1)
+			.once("value", snap => {
+				lastId = snap.val() === null ? 100 : snap.val()[Object.keys(snap.val())[0]].id;
+				const ref = firebase.database().ref("sectors/" + this.state.user.sector + "/songs").ref.push();
+				let newObj = {
+					Name: title,
+					Lyrics: lyrics,
+					id: lastId + 1
+				}
+				ref.set(newObj)
+					.then(this.setState({songAdded: {new: true, added: true, data: newObj, err: ""}}))
+					.catch(e => this.setState({songAdded: {new: true, added: false, data: newObj, err: e}}))
+			});
+	}
+
 	render() {
 		let stateIcon = "";
 		switch (this.state.edits) {
@@ -259,7 +281,7 @@ class App extends Component {
 		}
 		return (
 			<Router>
-				<div className="app " style={{paddingBottom: "1rem",}}>
+				<div className="app " style={{ paddingBottom: "1rem" }}>
 					<Header className="row" />
 					<Route
 						exact path="/"
@@ -338,12 +360,59 @@ class App extends Component {
 							/>
 						)}
 					/>
+
 					<Route
 						exact path="/account/forgot"
 						render={props => (
 							<ForgotPass
 								forgotSubmit={this.forgotSubmit}
 							/>
+						)}
+					/>
+
+					<Route 
+						path="/songs/add"
+						render={() => (
+							<React.Fragment>
+								{
+									this.state.pass !== false ?
+										(
+											<AddSong
+												addSongSubmit={this.addSongSubmit}
+												songAdded={this.state.songAdded}
+											/>
+										) : (
+											<h2>Sign in to continue</h2>
+										)
+								}
+							</React.Fragment>
+						)}
+					/>
+
+					<Route
+						path="/songs/all"	
+						render={() => (
+							<div className="container">
+								<h3>Under construction ❤</h3>
+							</div>
+						)}
+					/>
+
+					<Route
+						exact path="/songs"
+						render={() => (
+							<React.Fragment>
+								{
+									this.state.pass !== false ?
+									(
+										<Songs 
+											sector={this.state.user.sector || ""}
+										/>
+									) : (
+										<h2>Sign in to continue</h2>
+									)
+								}
+							</React.Fragment>
 						)}
 					/>
 				</div>
