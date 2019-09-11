@@ -7,8 +7,7 @@ import PropTypes from 'prop-types';
 export class AddSong extends PureComponent {
 	state = {
 		title: "",
-		lyrics: "",
-		songAdded: false
+		lyrics: ""
 	};
 
 	onChange = (field, data) => this.setState({ [field]: data });
@@ -19,10 +18,37 @@ export class AddSong extends PureComponent {
 			this.props.addSongSubmit(this.state.title, this.state.lyrics);
 			this.setState({title: "", lyrics: ""})
 		}
-	} 
+	}
+	
+	dismissToast = () => {
+		this.props.dismissToast();
+	}
 	
 	render() {
 		const songAdded = this.props.songAdded;
+		let toastDiv;
+		if (songAdded.new) {
+			let toastMessage = "";
+			let toastClass = "";
+			if (songAdded.added) {
+				toastMessage = "Song has been added";
+				toastClass = "toast-success";
+			} else {
+				toastMessage = "Failed to add: " + songAdded.err;
+				toastClass = "toast-error";
+			}
+			toastDiv = (
+				<div>
+					<div className="divider" />
+					<div className={"toast " + toastClass} >
+						<button className="btn btn-clear float-right" onClick={this.dismissToast}></button>
+						{toastMessage}
+					</div>
+				</div>
+			);
+		} else {
+			toastDiv = (<></>);
+		}
         return (
 			<div className="container column col-6 col-md-8 col-xs-12">
 				<form method="post" onSubmit={this.addSongSubmit}>
@@ -32,6 +58,7 @@ export class AddSong extends PureComponent {
 						type="text"
 						name="title"
 						id="title"
+						value={this.state.title}
 						placeholder="Song title"
 						onChange={e => { this.onChange("title", e.target.value) }}
 						required
@@ -41,25 +68,17 @@ export class AddSong extends PureComponent {
 						name="songLyrics"
 						id="singLyrics"
 						rows="10"
+						value={this.state.lyrics}
 						placeholder="Song Lyrics"
 						onChange={e => { this.onChange("lyrics", e.target.value) }}
 						required
-					>{this.state.lyrics}</textarea>
-					{/* <CKEditor
-						editor={ClassicEditor}
-						onInit={editor => {
-							// fix config(remove image input)
-						}}
-						onChange={(event, editor) => {
-							const data = editor.getData();
-							this.onChange("lyrics", data)
-						}}
-						data={this.state.lyrics}
-						required
-					/> */}
+					></textarea>
 					<input type="submit" value="Add" className="btn btn-block"/>
 				</form>
-				{/* toast songAdded */}
+
+				<div id="toastContainer">
+					{toastDiv}
+				</div>
 			</div>
         )
     }
@@ -67,7 +86,8 @@ export class AddSong extends PureComponent {
 
 AddSong.propTypes = {
 	addSongSubmit: PropTypes.func.isRequired,
-	songAdded: PropTypes.object.isRequired
+	songAdded: PropTypes.object.isRequired,
+	dismissToast:PropTypes.func.isRequired
 }
 
 export default AddSong

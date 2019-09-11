@@ -265,6 +265,10 @@ class App extends Component {
 			});
 	}
 
+	dismissToast = () => {
+		this.setState({ songAdded: { new: false } });
+	}
+
 	render() {
 		let stateIcon = "";
 		switch (this.state.edits) {
@@ -380,6 +384,7 @@ class App extends Component {
 											<AddSong
 												addSongSubmit={this.addSongSubmit}
 												songAdded={this.state.songAdded}
+												dismissToast={this.dismissToast}
 											/>
 										) : (
 											<h2>Sign in to continue</h2>
@@ -390,7 +395,7 @@ class App extends Component {
 					/>
 
 					<Route
-						path="/songs/all"	
+						path="/songs/all"
 						render={() => (
 							<div className="container">
 								<h3>Under construction ❤</h3>

@@ -76,7 +76,7 @@ class Account extends Component {
                         <div className="card-footer">
                             <div className="btn-group btn-group-block">
                                 <button className="btn btn-primary" onClick={this.signOut}>Sign Out</button>
-                                <a className="btn" href="#profile-modal">Profile</a>
+                                <a className="btn" href="#profile">Profile</a>
                             </div>
                         </div>
                     </div>

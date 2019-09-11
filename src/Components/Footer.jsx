@@ -5,7 +5,7 @@ export class Footer extends Component {
         return (
             <div className="card" style={footerStyle}>
                 <p className="text-grey card-subtitle" style={textStyle}>
-                    <a className="tab-item" href="https://github.com/Rod911/Song-Records/issues">Feedback & Bug reports</a> &copy; Malcolm Rodrigues 
+                    <a className="tab-item" target="_blank" rel="noopener noreferrer" href="https://github.com/Rod911/Song-Records/issues">Feedback & Bug reports</a> &copy; Malcolm Rodrigues 
                 </p>
             </div>
         )

@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
+import { createBrowserHistory } from 'history';
 
 class Header extends Component {
 	switchTab = (currentPath) => {
@@ -10,31 +11,66 @@ class Header extends Component {
 		document.getElementById(currentPath).classList.add("active");
 	}
 
-	componentDidMount() {
-		// this.switchTab(window.location.pathname);
+	navigate(locationPath) {
+		let path;
+		switch (locationPath.split('/')[1]) {
+			case "":
+				path = "/";
+				break;
+			case "categories":
+			case "songs":
+				path = "/categories";
+				break;
+			case "account":
+				path = "/account";
+				break;
+			default:
+				return;
+		}
+		this.switchTab(path);
 	}
-   
+
+	componentWillUnmount() {
+		this.unlisten();
+	}
+	
+	componentDidMount() {
+		const history = createBrowserHistory();
+		const location = history.location;
+
+		this.unlisten = history.listen((location, action) => {
+			// location is an object like window.location
+			// console.log(action, location.pathname, location.state);
+		});
+
+		history.listen((location, action) => {
+			this.navigate(location.pathname);
+		});
+
+		this.navigate(location.pathname);	
+	}
+
 	render() {
-		
+
 		let component = (
-			<div className="header column" style={{ backgroundColor: "#19191B", color: "#F7F9FB"}}>
+			<div className="header column" style={{ backgroundColor: "#19191B", color: "#F7F9FB" }}>
 				<header>
-					<h1 style={{paddingTop: "1rem" }} >Recorder</h1>
+					<h1 style={{ paddingTop: "1rem" }} >Recorder</h1>
 					<ul className="tab tab-block" id="navList">
 						<li className={"tab-item "} id="/">
-							<Link to="/" onClick={ ()=> this.switchTab("/")} >Home</Link>
+							<Link className="unfocus" to="/" onClick={() => this.switchTab("/")} >Home</Link>
 						</li>
-						<li className={"tab-item " } id="/categories">
-							<Link to="/categories"  onClick={ () => this.switchTab("/categories")}>Categories</Link>
+						<li className={"tab-item "} id="/categories">
+							<Link className="unfocus" to="/categories" onClick={() => this.switchTab("/categories")}>Categories</Link>
 						</li>
-						<li className={"tab-item " } id="/account">
-							<Link to="/account" onClick={ () => this.switchTab("/account")}>Account</Link>
+						<li className={"tab-item "} id="/account">
+							<Link className="unfocus" to="/account" onClick={() => this.switchTab("/account")}>Account</Link>
 						</li>
 					</ul>
 				</header>
 			</div>
 		);
-		return(component);
+		return (component);
 	}
 }
 

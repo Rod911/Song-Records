@@ -41,15 +41,35 @@ export class Songs extends Component {
         }
         let songDivs = [];
         Object.values(songList).forEach(song => {
-            songDivs.push(
-                <div className="tile" key={song.id}>
-                    <div className="tile-icon"></div>
-                    <div className="tile-content">
-                        <p className="tile-title text-bold"> {song.Name} </p>
-                        <div className="tile-subtitle"> {song.Lyrics.substring(0, 40)} </div>
+            let lyrics = song.Lyrics.substring(0, 80);
+            if (song.Name !== "No results") {
+                songDivs.push(
+                    <div className="column col-6 col-xl-12" key={song.id} style={{ padding: ".4rem"}}>
+                        <div className="card" style={{ boxShadow: "0 0.25rem 1rem rgba(48,55,66,.15)"}}>
+                            <div className="card-header">
+                                <div className="card-title h5"> {song.Name} </div>
+                            </div>
+                            <div className="card-body" style={{whiteSpace: "pre-line"}}>
+                                {lyrics}
+                            </div>
+                            <div className="card-footer">
+                                <Link to={"/songs/view/" + song.id} className="btn float-right">Open</Link>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            )
+                )
+            } else {
+                songDivs.push(
+                    <div className="column col-6 col-xl-12" key="empty" style={{ padding: ".4rem" }}>
+                        <div className="empty" style={{ boxShadow: "0 0.25rem 1rem rgba(48,55,66,.15)" }}>
+                            <div className="empty-icon">
+                                <i className="icon icon-flag icon-4x"></i>
+                            </div>
+                            <div className="empty-title h5">Did not match any titles</div>
+                        </div>
+                    </div>
+                )
+            }
         });
 
         return (
@@ -79,14 +99,19 @@ export class Songs extends Component {
                 <div className="songList">
                     {   
                         songList.length === 0 ? (
-                            <div className="empty"></div>
+                            <div className="empty">
+                                <div className="empty-icon">
+                                    <i className="icon icon-search icon-4x"></i>
+                                </div>
+                                <div className="empty-title h5">Search something</div>
+                            </div>
                         ) : (
 
                             <div className = "panel" >
                                 <div className = "panel-header">
-                                    <div className = "panel-title h6">Results</div>
+                                    <div className = "panel-title h5">Results</div>
                                 </div>
-                                <div className="panel-body">
+                                <div className="panel-body columns" style={{paddingBottom: "0.8rem"}}>
                                     {songDivs}
                                 </div>
                             </div >
