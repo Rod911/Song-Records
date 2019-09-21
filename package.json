@@ -4,8 +4,6 @@
   "homepage": "https://song-records.web.app",
   "private": true,
   "dependencies": {
-    "@ckeditor/ckeditor5-build-classic": "^12.4.0",
-    "@ckeditor/ckeditor5-react": "^1.1.3",
     "firebase": "^6.5.0",
     "history": "^4.9.0",
     "react": "^16.9.0",

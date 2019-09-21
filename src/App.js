@@ -10,6 +10,7 @@ import Account from "./Components/pages/Account";
 import ForgotPass from './Components/pages/ForgotPass';
 import Songs from './Components/pages/Songs';
 import AddSong from './Components/pages/AddSong';
+import ViewSong from './Components/pages/ViewSong';
 
 import Header from "./Components/Header";
 import DatePicker from "./Components/DatePicker";
@@ -17,9 +18,11 @@ import Entries from "./Components/Entries";
 import Footer from './Components/Footer';
 
 import config from "./config";
+import history from './history';
 
 import "spectre.css";
 import "spectre.css/dist/spectre-icons.css";
+import "./index.css";
 
 class App extends Component {
 	
@@ -284,7 +287,7 @@ class App extends Component {
 		default: stateIcon = "";
 		}
 		return (
-			<Router>
+			<Router history={history}>
 				<div className="app " style={{ paddingBottom: "1rem" }}>
 					<Header className="row" />
 					<Route
@@ -395,7 +398,7 @@ class App extends Component {
 					/>
 
 					<Route
-						path="/songs/all"
+						exact path="/songs/all"
 						render={() => (
 							<div className="container">
 								<h3>Under construction ❤</h3>
@@ -419,6 +422,21 @@ class App extends Component {
 								}
 							</React.Fragment>
 						)}
+					/>
+
+					<Route
+						path="/songs/view/:songId"
+						render={(props) => {
+							const id = props.match.params.songId;
+							if (this.state.pass !== false) {
+								return (<ViewSong
+									sector={this.state.user.sector || ""}
+									id={id}
+								/>)
+							} else {
+								return (<h2>Sign in to continue</h2>)
+							}
+						}}
 					/>
 				</div>
 				<Footer />

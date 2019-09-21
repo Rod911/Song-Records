@@ -1,0 +1,46 @@
+
+.songContainer{
+  padding: 1rem;
+}
+
+.songContainer > *:focus{
+  border:none !important;
+}
+
+.titleInput{
+  border: none !important;
+  font-size: 2rem !important;
+  height: 3rem !important;
+  border-bottom: 1px solid #afafaf !important;
+  margin-bottom: .5rem;
+}
+
+.lyricsInput{
+  font-size: 1.4rem;
+  height: 50vh;
+  overflow: auto;
+}
+
+.lyricsSection{
+  height: 8rem;
+  padding: 1rem 0;
+  line-height: 1.6rem;
+}
+
+.lyricsSection > *{
+  padding: 0 1.2rem;
+}
+
+.fabContainer{
+  position: relative;
+}
+
+.fabContainer > button{
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  border-radius: 50%;
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+  font-size: 1.5rem;
+  height: 2.5rem;
+}

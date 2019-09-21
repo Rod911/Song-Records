@@ -1,16 +1,17 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import './addSong.css';
 
-// import CKEditor from '@ckeditor/ckeditor5-react';
-// import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-
-export class AddSong extends PureComponent {
+export class AddSong extends Component {
 	state = {
 		title: "",
-		lyrics: ""
+		lyrics: []
 	};
 
-	onChange = (field, data) => this.setState({ [field]: data });
+	onChange = (field, data) => {
+		this.setState({ [field]: data })
+		this.dismissToast();
+	};
 
 	addSongSubmit = (e) => {
 		e.preventDefault();
@@ -22,6 +23,12 @@ export class AddSong extends PureComponent {
 	
 	dismissToast = () => {
 		this.props.dismissToast();
+	}
+
+	componentDidMount() {
+		document.getElementById("lyricsSection").addEventListener("input", e => {
+			console.log(e);
+		})
 	}
 	
 	render() {
@@ -53,26 +60,36 @@ export class AddSong extends PureComponent {
 			<div className="container column col-6 col-md-8 col-xs-12">
 				<form method="post" onSubmit={this.addSongSubmit}>
 					<h3>Add new song</h3>
-					<input
-						className="form-input"
-						type="text"
-						name="title"
-						id="title"
-						value={this.state.title}
-						placeholder="Song title"
-						onChange={e => { this.onChange("title", e.target.value) }}
-						required
-					/>
-					<textarea
-						className="form-input"
-						name="songLyrics"
-						id="singLyrics"
-						rows="10"
-						value={this.state.lyrics}
-						placeholder="Song Lyrics"
-						onChange={e => { this.onChange("lyrics", e.target.value) }}
-						required
-					></textarea>
+					<div className="songContainer">
+						<input
+							className="titleInput form-input"
+							type="text"
+							name="title"
+							id="title"
+							value={this.state.title}
+							placeholder="Song title"
+							onChange={e => { this.onChange("title", e.target.value) }}
+							required
+						/>
+						{/* <textarea
+							className="form-input"
+							name="songLyrics"
+							id="singLyrics"
+							rows="10"
+							value={this.state.lyrics}
+							placeholder="Song Lyrics"
+							onChange={e => { this.onChange("lyrics", e.target.value) }}
+							required
+						></textarea> */}
+						<div className="lyricsInput" onClick={() => { document.querySelectorAll(".lyricsSection")[document.querySelectorAll(".lyricsSection").length - 1].focus() }}>
+							<div className="lyricsSection" id="lyricsSection" contentEditable>
+								<div><br/></div>
+							</div>
+						</div>
+					</div>
+					<div className="fabContainer">
+						<button role="button" className="btn btn-primary"><i className="icon icon-plus"></i></button>
+					</div>
 					<input type="submit" value="Add" className="btn btn-block"/>
 				</form>
 
@@ -83,6 +100,7 @@ export class AddSong extends PureComponent {
         )
     }
 }
+
 
 AddSong.propTypes = {
 	addSongSubmit: PropTypes.func.isRequired,

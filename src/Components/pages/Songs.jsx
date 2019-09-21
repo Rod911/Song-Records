@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import firebase from 'firebase/app';
 import 'firebase/database';
+import history from '../../history';
 
 export class Songs extends Component {
     state = {
@@ -10,8 +11,19 @@ export class Songs extends Component {
         songList: []
     }
 
+    componentWillMount() {
+        this.unlisten = history.listen(() => {
+            this.searchUrl();
+        })
+    }
+
+    componentWillUnmount() {
+        this.unlisten();
+    }
+
     componentDidMount() { 
         this.sector = this.props.sector;
+        this.searchUrl();
     }
     
     onChange = (e) => this.setState({ newTitle: e.target.value });
@@ -19,18 +31,34 @@ export class Songs extends Component {
     onSubmit = e => {
         e.preventDefault();
         const term = this.state.newTitle;
-        this.setState({ newTitle: "" });
-        if (term !== "") {
+        history.push('/songs?q=' + term);
+    }
+
+    searchUrl = () => {
+        const query = new URLSearchParams(history.location.search);
+        const title = query.get('q') || "";
+        this.setState({ newTitle: title });
+        
+        if (title !== "") {
             const database = firebase.database();
             const rootRef = database.ref("sectors/" + this.sector + "/songs");
-            let songsRef = rootRef.orderByChild("Name").equalTo(term.toLowerCase());
+            let songsRef = rootRef.orderByChild("Name").equalTo(title.toLowerCase());
             songsRef.on("value", snap => {
-                if (snap.val() !== null) {
-                    this.setState({ songList: Object.values(snap.val()) });
+                if (snap.exists()) {
+                    let list = Object.entries(snap.val()).map(song => {
+                        return ({
+                            Name: song[1].Name,
+                            Lyrics: song[1].Lyrics,
+                            id: song[0]
+                        })
+                    });
+                    this.setState({ songList: list });
                 } else {
                     this.setState({ songList: [{Name: "No results", Lyrics: "", id: 0 }] });
                 }
             });
+        } else {
+            this.setState({ songList: [] });
         }
     }
 
@@ -40,12 +68,12 @@ export class Songs extends Component {
             songList = this.state.songList
         }
         let songDivs = [];
-        Object.values(songList).forEach(song => {
+        songList.forEach(song => {
             let lyrics = song.Lyrics.substring(0, 80);
             if (song.Name !== "No results") {
                 songDivs.push(
-                    <div className="column col-6 col-xl-12" key={song.id} style={{ padding: ".4rem"}}>
-                        <div className="card" style={{ boxShadow: "0 0.25rem 1rem rgba(48,55,66,.15)"}}>
+                    <div className="column col-6 col-xl-12" key={song.id} style={ gridCard }>
+                        <div className="card" style={ cardStyle }>
                             <div className="card-header">
                                 <div className="card-title h5"> {song.Name} </div>
                             </div>
@@ -60,8 +88,8 @@ export class Songs extends Component {
                 )
             } else {
                 songDivs.push(
-                    <div className="column col-6 col-xl-12" key="empty" style={{ padding: ".4rem" }}>
-                        <div className="empty" style={{ boxShadow: "0 0.25rem 1rem rgba(48,55,66,.15)" }}>
+                    <div className="column col-6 col-xl-12" key="empty" style={ gridCard }>
+                        <div className="empty" style={ cardStyle }>
                             <div className="empty-icon">
                                 <i className="icon icon-flag icon-4x"></i>
                             </div>
@@ -111,8 +139,8 @@ export class Songs extends Component {
                                 <div className = "panel-header">
                                     <div className = "panel-title h5">Results</div>
                                 </div>
-                                <div className="panel-body columns" style={{paddingBottom: "0.8rem"}}>
-                                    {songDivs}
+                                <div className="panel-body columns" style={ gridLayout }>
+                                    { songDivs }
                                 </div>
                             </div >
                         )
@@ -126,6 +154,18 @@ export class Songs extends Component {
         )
     }
 }
+
+const gridLayout = {
+    paddingBottom: "0.8rem",
+}
+
+const gridCard = {
+    padding: ".4rem"
+}
+
+const cardStyle = {
+    boxShadow: "0 0.25rem 1rem rgba(48,55,66,.15)"
+} 
 
 Songs.propTypes = {
     sector: PropTypes.string.isRequired
