@@ -15,22 +15,25 @@ export class AddSong extends Component {
 
 	addSongSubmit = (e) => {
 		e.preventDefault();
-		if (this.state.lyrics !== "" && this.state.title !== "") {	
+		if (this.state.lyrics !== "" && this.state.title !== "") {
 			this.props.addSongSubmit(this.state.title, this.state.lyrics);
-			this.setState({title: "", lyrics: ""})
+			this.setState({ title: "", lyrics: "" })
 		}
 	}
-	
+
 	dismissToast = () => {
 		this.props.dismissToast();
 	}
 
 	componentDidMount() {
 		document.getElementById("lyricsSection").addEventListener("input", e => {
-			console.log(e);
+			const text = e.target.innerText;
+			console.log(text.split("\n"));
+			// if(text)
+			this.setState({ lyrics: text });
 		})
 	}
-	
+
 	render() {
 		const songAdded = this.props.songAdded;
 		let toastDiv;
@@ -56,7 +59,7 @@ export class AddSong extends Component {
 		} else {
 			toastDiv = (<></>);
 		}
-        return (
+		return (
 			<div className="container column col-6 col-md-8 col-xs-12">
 				<form method="post" onSubmit={this.addSongSubmit}>
 					<h3>Add new song</h3>
@@ -82,30 +85,31 @@ export class AddSong extends Component {
 							required
 						></textarea> */}
 						<div className="lyricsInput" onClick={() => { document.querySelectorAll(".lyricsSection")[document.querySelectorAll(".lyricsSection").length - 1].focus() }}>
-							<div className="lyricsSection" id="lyricsSection" contentEditable>
-								<div><br/></div>
+							<h4 className="lyricHead">Lyrics:</h4>
+							<div className="lyricsSection" id="lyricsSection" contentEditable suppressContentEditableWarning={true}>
+								<div><br /></div>
 							</div>
 						</div>
 					</div>
-					<div className="fabContainer">
-						<button role="button" className="btn btn-primary"><i className="icon icon-plus"></i></button>
-					</div>
-					<input type="submit" value="Add" className="btn btn-block"/>
 				</form>
+				<div className="fabContainer">
+					<button role="button" className="btn btn-primary"><i className="icon icon-plus"></i></button>
+				</div>
+				<input type="submit" value="Add" className="btn btn-block" />
 
 				<div id="toastContainer">
 					{toastDiv}
 				</div>
 			</div>
-        )
-    }
+		)
+	}
 }
 
 
 AddSong.propTypes = {
 	addSongSubmit: PropTypes.func.isRequired,
 	songAdded: PropTypes.object.isRequired,
-	dismissToast:PropTypes.func.isRequired
+	dismissToast: PropTypes.func.isRequired
 }
 
 export default AddSong
