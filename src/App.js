@@ -25,7 +25,7 @@ import "spectre.css/dist/spectre-icons.css";
 import "./index.css";
 
 class App extends Component {
-	
+
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -38,7 +38,8 @@ class App extends Component {
 			attemptLogin: "",
 			edits: "saved",
 			duplicateCategoryAdded: false,
-			songAdded: { new: false, added: false, data: null, err: ""}
+			songAdded: { new: false, added: false, data: null, err: "" },
+			darkMode: false
 		};
 		firebase.initializeApp(config);
 	}
@@ -52,14 +53,14 @@ class App extends Component {
 				let name = localStorage.getItem("name");
 				let type = localStorage.getItem("type");
 				let userid = localStorage.getItem("user");
-				if (userid) {	
+				if (userid) {
 					this.setState({ user: { id: userid, name: name, sector: sector, type: type }, pass: true });
-					
+
 					let categoriesRef = rootRef.child(sector + "/categories");
 					categoriesRef.on("value", snap => {
 						let filteredArray = [null];
 						if (snap.val()) {
-							filteredArray = snap.val().filter( el => el);
+							filteredArray = snap.val().filter(el => el);
 						}
 						this.setState({ categories: [...filteredArray] });
 					});
@@ -68,6 +69,7 @@ class App extends Component {
 				this.setState({ user: { id: null, name: "" } });
 			}
 		});
+		this.setState({ darkMode: localStorage.getItem("darkMode") === "true" });
 	}
 
 	del = id => {
@@ -78,11 +80,11 @@ class App extends Component {
 	addCategory = id => {
 		if (this.state.categories.includes(id)) {
 			this.setState({ duplicateCategoryAdded: true })
-			setTimeout(() => this.setState({ duplicateCategoryAdded: false }) ,3000)
+			setTimeout(() => this.setState({ duplicateCategoryAdded: false }), 3000)
 			return
 		} else
-			this.setState({duplicateCategoryAdded: false})
-			
+			this.setState({ duplicateCategoryAdded: false })
+
 		const categories = [...this.state.categories, id];
 		this.setCategories(categories);
 	}
@@ -104,7 +106,7 @@ class App extends Component {
 		this.setState({ edits: "saving" });
 	}
 
-	undoEdits = () => this.setState({ inputs: {...this.state.serverData}, edits: "saved" });
+	undoEdits = () => this.setState({ inputs: { ...this.state.serverData }, edits: "saved" });
 
 	clear = (id) => {
 		// Delete uncategorised items
@@ -134,7 +136,7 @@ class App extends Component {
 		let data = firebase.database().ref("sectors/" + this.state.user.sector + "/data").child(date);
 		data.on("value", snap => {
 			let inputs = (snap.val() || {});
-			this.setState({ inputs: { ...inputs }, serverData: { ...inputs }, edits: "saved"});
+			this.setState({ inputs: { ...inputs }, serverData: { ...inputs }, edits: "saved" });
 		});
 	}
 
@@ -177,14 +179,14 @@ class App extends Component {
 				// const errorCode = error.code;
 				let errorMessage = "";
 				switch (error.code) {
-				case "auth/wrong-password":
-					errorMessage = "The password is invalid.";
-					break;
-				case "auth/user-not-found":
-					errorMessage = "There is no user corresponding to this email. The user may have been deleted.";
-					break;
-				default:
-					errorMessage = error.message;
+					case "auth/wrong-password":
+						errorMessage = "The password is invalid.";
+						break;
+					case "auth/user-not-found":
+						errorMessage = "There is no user corresponding to this email. The user may have been deleted.";
+						break;
+					default:
+						errorMessage = error.message;
 				}
 
 				this.setState({
@@ -263,9 +265,14 @@ class App extends Component {
 					id: lastId + 1
 				}
 				ref.set(newObj)
-					.then(this.setState({songAdded: {new: true, added: true, data: newObj, err: ""}}))
-					.catch(e => this.setState({songAdded: {new: true, added: false, data: newObj, err: e}}))
+					.then(this.setState({ songAdded: { new: true, added: true, data: newObj, err: "" } }))
+					.catch(e => this.setState({ songAdded: { new: true, added: false, data: newObj, err: e } }))
 			});
+	}
+
+	changeTheme = (darkEnable) => {
+		this.setState({ darkMode: darkEnable });
+		localStorage.setItem("darkMode", darkEnable);
 	}
 
 	dismissToast = () => {
@@ -275,20 +282,23 @@ class App extends Component {
 	render() {
 		let stateIcon = "";
 		switch (this.state.edits) {
-		case "saved":
-			stateIcon = "check";
-			break;
-		case "modified":
-			stateIcon = "flag";
-			break;
-		case "saving":
-			stateIcon = "time";
-			break;
-		default: stateIcon = "";
+			case "saved":
+				stateIcon = "check";
+				break;
+			case "modified":
+				stateIcon = "flag";
+				break;
+			case "saving":
+				stateIcon = "time";
+				break;
+			default: stateIcon = "";
 		}
+
+		const darkMode = this.state.darkMode ? "dark" : "";
+
 		return (
 			<Router history={history}>
-				<div className="app " style={{ paddingBottom: "1rem" }}>
+				<div className={"app " + darkMode} style={{ paddingBottom: "1rem" }}>
 					<Header className="row" />
 					<Route
 						exact path="/"
@@ -307,7 +317,7 @@ class App extends Component {
 													<div className="divider" />
 													<Entries
 														categories={this.state.categories}
-														data={{...this.state.inputs}}
+														data={{ ...this.state.inputs }}
 														onChange={this.inputUpdate}
 														updateDate={this.updateDate}
 														clear={this.clear}
@@ -364,6 +374,8 @@ class App extends Component {
 								loginFormSubmit={this.loginFormSubmit}
 								signOut={this.signOut}
 								verifyUser={this.verifyUser}
+								changeTheme={this.changeTheme}
+								currentTheme={darkMode}
 							/>
 						)}
 					/>
@@ -377,7 +389,7 @@ class App extends Component {
 						)}
 					/>
 
-					<Route 
+					<Route
 						path="/songs/add"
 						render={() => (
 							<React.Fragment>
@@ -412,13 +424,13 @@ class App extends Component {
 							<React.Fragment>
 								{
 									this.state.pass !== false ?
-									(
-										<Songs 
-											sector={this.state.user.sector || ""}
-										/>
-									) : (
-										<h2>Sign in to continue</h2>
-									)
+										(
+											<Songs
+												sector={this.state.user.sector || ""}
+											/>
+										) : (
+											<h2>Sign in to continue</h2>
+										)
 								}
 							</React.Fragment>
 						)}
@@ -439,7 +451,7 @@ class App extends Component {
 						}}
 					/>
 				</div>
-				<Footer />
+				<Footer currentTheme={darkMode} />
 			</Router>
 		);
 	}

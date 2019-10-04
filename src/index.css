@@ -1,13 +1,75 @@
+/* Malcolm Rodrigues */
+/* html{
+  background-color: #121212;
+} */
+
 body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-        "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-        sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-    font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-        monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+/* Dark */
+
+.dark,
+.dark input,
+.dark .divider,
+.dark label,
+.dark header,
+.dark .tab,
+.dark .card,
+.dark .panel,
+.dark .modal-container,
+.dark .modal-header {
+  background-color: #121212;
+  color: #d8d8d8ea;
+  border-color: #d8d8d88e;
+}
+
+.dark button,
+.dark .input-group-addon,
+.dark a.btn {
+  background-color: #121212;
+  border-color: #d8d8d88e;
+}
+
+.dark a.btn:hover,
+.dark input.btn:hover,
+.dark button:hover {
+  background-color: #252525;
+}
+
+.dark .empty {
+  background-color: #3b3b3b18;
+}
+
+.dark a.btn.btn-link {
+  border: none;
+}
+
+.dark select{
+  background: #121212 !important;
+}
+
+.dark .modal-overlay{
+	background: #000000c9 !important;
+}
+
+.dark ::selection{
+	background-color: #99a2ff;
+	color: #ebebeb;
+}
+
+/* Light */
+
+.modal-overlay{
+	background: #00000044 !important;
 }

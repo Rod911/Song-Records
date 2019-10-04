@@ -6,13 +6,13 @@ import ProfileModal from './ProfileModal';
 import Users from './Users';
 
 class Account extends Component {
-    constructor(props){
+    constructor(props) {
         super(props);
         this.loginFormSubmit = this.submit.bind(this);
         this.signOut = this.signOut.bind(this);
     }
 
-    submit = (e) =>{
+    submit = (e) => {
         e.preventDefault();
         this.props.loginFormSubmit([
             e.target['email'].value,
@@ -20,6 +20,11 @@ class Account extends Component {
         ])
         return false;
     }
+
+    changeTheme = (darkEnable) => {
+        this.props.changeTheme(darkEnable);
+    }
+
     signOut = () => {
         this.props.signOut()
         localStorage.clear();
@@ -29,8 +34,9 @@ class Account extends Component {
         let user = this.props.user;
         let attemptLogin = this.props.attemptLogin;
         let loggedIn = this.props.loggedIn;
-        if(!loggedIn){
-            return(
+        let currentTheme = this.props.currentTheme === "dark";
+        if (!loggedIn) {
+            return (
                 <div className="container loginForm col-6 col-sm-12">
                     <form method="POST" onSubmit={this.submit} >
                         <fieldset>
@@ -49,12 +55,12 @@ class Account extends Component {
                             <div className="form-group">
                                 <Link to="/account/forgot" className="btn btn-link btn-block" >Forgot password?</Link>
                             </div>
-                        {
-                            attemptLogin !== "" &&
-                            (<div className="error" >
-                                <span className="label label-error" >{attemptLogin}</span>
-                            </div>)
-                        }
+                            {
+                                attemptLogin !== "" &&
+                                (<div className="error" >
+                                    <span className="label label-error" >{attemptLogin}</span>
+                                </div>)
+                            }
                         </fieldset>
                     </form>
                 </div>
@@ -83,22 +89,41 @@ class Account extends Component {
                 </div>
             );
 
-            return(
+            const appearance = (
+                <div className="container appearance column col-4 col-lg-6 col-md-8 col-xs-12">
+                    <div className="divider" />
+                    <div className="panel">
+                        <div className="panel-header h4">Appearance</div>
+                        <div className="panel-body">
+                            <div className="form-group">
+                                <label className="form-switch">
+                                    <input type="checkbox" onChange={e => this.changeTheme(e.target.checked)} checked={currentTheme}/>
+                                    <i className="form-icon"></i> 
+                                    <span>Toggle Dark Mode</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            return (
                 <React.Fragment>
                     {accoutDetails}
                     <ProfileModal
                         user={user}
                         auth={this.props.auth}
                         verify={this.props.verifyUser}
-                        // Prop-drilling 💔
+                    // Prop-drilling 💔
                     />
                     {
                         user.type === "admin" && (
                             <Users
-                                currentUser = {this.props.user.id}
+                                currentUser={this.props.user.id}
                             />
                         )
                     }
+                    {appearance}
                 </React.Fragment>
             );
         }
@@ -106,13 +131,15 @@ class Account extends Component {
 }
 
 Account.propTypes = {
-    attemptLogin:PropTypes.string.isRequired,
+    attemptLogin: PropTypes.string.isRequired,
     loggedIn: PropTypes.bool.isRequired,
     user: PropTypes.object,
     auth: PropTypes.object,
     loginFormSubmit: PropTypes.func.isRequired,
     signOut: PropTypes.func.isRequired,
-    verifyUser: PropTypes.func.isRequired
+    verifyUser: PropTypes.func.isRequired,
+    changeTheme: PropTypes.func.isRequired,
+    currentTheme: PropTypes.string
 }
 
 export default Account

@@ -65,10 +65,10 @@ export class ProfileModal extends Component {
         const initials = userName.split(' ').map(x => x.charAt(0)).join('').substr(0, 2).toUpperCase();
         return (
             <div className="modal modal-lg" id="profile">
-                <a className="modal-overlay" href="#modals" aria-label="Close" ></a>
+                <a className="modal-overlay" href="#" aria-label="Close" ></a>
                 <div className="modal-container" role="document">
                     <div className="modal-header">
-                        <a className="btn btn-clear float-right" href="#modals" aria-label="Close"></a>
+                        <a className="btn btn-clear float-right" href="#" aria-label="Close"></a>
                         <div className="modal-title h5">Profile</div>
                     </div>
                     <div className="modal-body">
@@ -118,7 +118,7 @@ export class ProfileModal extends Component {
                                     </div>
                                     <div className="panel-footer btn-group btn-group-block">
                                         <button className="btn btn-primary btn-block" >Save</button>
-                                        <a className="btn btn-block" href="#modals">Close</a>
+                                        <a className="btn btn-block" href="#">Close</a>
                                     </div>
                                 </form>
                             </div>
