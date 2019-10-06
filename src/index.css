@@ -12,9 +12,36 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.app {
+  min-height: calc(100vh - 45px);
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+.step {
+  padding: 0.5rem 0 1rem 0;
+}
+
+.footer {
+  padding: 0.5rem;
+  text-align: center;
+  border: none;
+  border-top: 1px solid #d8d8d88e;
+  border-radius: 0;
+}
+
+.footer > .card-subtitle {
+  color: #d8d8d8ea;
+  margin: 0 auto;
+}
+
+/* Light */
+
+.modal-overlay {
+  background: #00000044 !important;
 }
 
 /* Dark */
@@ -28,8 +55,9 @@ code {
 .dark .card,
 .dark .panel,
 .dark .modal-container,
-.dark .modal-header {
-  background-color: #121212;
+.dark .modal-header,
+.dark .footer {
+  background-color: #1a1a1a;
   color: #d8d8d8ea;
   border-color: #d8d8d88e;
 }
@@ -37,14 +65,20 @@ code {
 .dark button,
 .dark .input-group-addon,
 .dark a.btn {
-  background-color: #121212;
+  background-color: #1a1a1a;
   border-color: #d8d8d88e;
 }
 
 .dark a.btn:hover,
 .dark input.btn:hover,
-.dark button:hover {
+.dark button:hover,
+.dark .btn:hover {
+  background: #252525;
   background-color: #252525;
+}
+
+.dark .btn:focus {
+  background-color: #1714c7;
 }
 
 .dark .empty {
@@ -55,21 +89,77 @@ code {
   border: none;
 }
 
-.dark select{
-  background: #121212 !important;
+.dark select {
+  background: #1a1a1a !important;
 }
 
-.dark .modal-overlay{
-	background: #000000c9 !important;
+.dark .modal-overlay {
+  background: #000000c9 !important;
 }
 
-.dark ::selection{
-	background-color: #99a2ff;
-	color: #ebebeb;
+.dark ::selection {
+  background-color: #99a2ff;
+  color: #ebebeb;
 }
 
-/* Light */
+/* Black */
 
-.modal-overlay{
-	background: #00000044 !important;
+.black,
+.black input,
+.black .divider,
+.black label,
+.black header,
+.black .tab,
+.black .card,
+.black .panel,
+.black .modal-container,
+.black .modal-header {
+  background-color: #000;
+  color: #d8d8d8ea;
+  border-color: #d8d8d88e;
+}
+
+.black button,
+.black .input-group-addon,
+.black a.btn {
+  background-color: #000;
+  border-color: #d8d8d88e;
+}
+
+.black a.btn:hover,
+.black input.btn:hover,
+.black button:hover,
+.black .btn:hover {
+  background-color: #252525;
+}
+
+.black .empty {
+  background-color: #3b3b3b18;
+}
+
+.black a.btn.btn-link {
+  border: none;
+}
+
+.black select {
+  background: #000 !important;
+}
+
+.black .modal-overlay {
+  background: #000000c9 !important;
+}
+
+.black ::selection {
+  background-color: #99a2ff;
+  color: #ebebeb;
+}
+
+.black .btn:focus {
+  background-color: #1714c7;
+}
+
+a.active,
+.btn-primary:focus {
+  background-color: #1714c7 !important;
+  background: #1714c7 !important;
 }

@@ -53,7 +53,7 @@ class Header extends Component {
 	render() {
 
 		let component = (
-			<div className="header column" style={{ backgroundColor: "#19191B", color: "#F7F9FB" }}>
+			<div className="header column">
 				<header>
 					<h1 style={{ paddingTop: "1rem" }} >Recorder</h1>
 					<ul className="tab tab-block" id="navList">

@@ -39,7 +39,7 @@ class App extends Component {
 			edits: "saved",
 			duplicateCategoryAdded: false,
 			songAdded: { new: false, added: false, data: null, err: "" },
-			darkMode: false
+			theme: ""
 		};
 		firebase.initializeApp(config);
 	}
@@ -69,7 +69,7 @@ class App extends Component {
 				this.setState({ user: { id: null, name: "" } });
 			}
 		});
-		this.setState({ darkMode: localStorage.getItem("darkMode") === "true" });
+		this.setState({ theme: localStorage.getItem("theme") });
 	}
 
 	del = id => {
@@ -270,9 +270,9 @@ class App extends Component {
 			});
 	}
 
-	changeTheme = (darkEnable) => {
-		this.setState({ darkMode: darkEnable });
-		localStorage.setItem("darkMode", darkEnable);
+	changeTheme = (mode) => {
+		this.setState({ theme: mode });
+		localStorage.setItem("theme", mode);
 	}
 
 	dismissToast = () => {
@@ -294,11 +294,11 @@ class App extends Component {
 			default: stateIcon = "";
 		}
 
-		const darkMode = this.state.darkMode ? "dark" : "";
+		const theme = this.state.theme;
 
 		return (
 			<Router history={history}>
-				<div className={"app " + darkMode} style={{ paddingBottom: "1rem" }}>
+				<div className={"app " + theme} style={{ paddingBottom: "1rem" }}>
 					<Header className="row" />
 					<Route
 						exact path="/"
@@ -375,7 +375,7 @@ class App extends Component {
 								signOut={this.signOut}
 								verifyUser={this.verifyUser}
 								changeTheme={this.changeTheme}
-								currentTheme={darkMode}
+								currentTheme={theme}
 							/>
 						)}
 					/>
@@ -451,7 +451,7 @@ class App extends Component {
 						}}
 					/>
 				</div>
-				<Footer currentTheme={darkMode} />
+				<Footer currentTheme={theme} />
 			</Router>
 		);
 	}
