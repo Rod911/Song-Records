@@ -21,20 +21,21 @@ class Account extends Component {
         return false;
     }
 
-    changeTheme = (darkEnable) => {
-        this.props.changeTheme(darkEnable);
-    }
-
     signOut = () => {
         this.props.signOut()
         localStorage.clear();
+    }
+
+    setTheme = (e) => {
+        e.preventDefault();
+        this.props.changeTheme(e.target.getAttribute("data-theme"));
     }
 
     render() {
         let user = this.props.user;
         let attemptLogin = this.props.attemptLogin;
         let loggedIn = this.props.loggedIn;
-        let currentTheme = this.props.currentTheme === "dark";
+        let currentTheme = this.props.currentTheme;
         if (!loggedIn) {
             return (
                 <div className="container loginForm col-6 col-sm-12">
@@ -94,13 +95,25 @@ class Account extends Component {
                     <div className="divider" />
                     <div className="panel">
                         <div className="panel-header h4">Appearance</div>
-                        <div className="panel-body">
+                        <div className="panel-footer">
                             <div className="form-group">
-                                <label className="form-switch">
-                                    <input type="checkbox" onChange={e => this.changeTheme(e.target.checked)} checked={currentTheme}/>
-                                    <i className="form-icon"></i> 
-                                    <span>Toggle Dark Mode</span>
-                                </label>
+                                <div className="btn-group btn-group-block">
+                                    <button className={"btn btn-sm theme-select " + (currentTheme === "light" ? "active" : "") } data-theme="light" onClick={this.setTheme}>Light</button>
+                                    <button className={"btn btn-sm theme-select " + (currentTheme === "dark" ? "active" : "") } data-theme="dark" onClick={this.setTheme}>Dark</button>
+                                    <button className={"btn btn-sm theme-select " + (currentTheme === "black" ? "active" : "") } data-theme="black" onClick={this.setTheme}>Black</button>
+                                </div> 
+
+                                {/* <ul className="step">
+                                    <li className={"step-item " + (currentTheme === "light" ? "active" : "") }>
+                                        <a href="#" className="theme-select" data-theme="light" onClick={this.setTheme}>Light</a>
+                                    </li>
+                                    <li className={"step-item " + (currentTheme === "dark" ? "active" : "") }>
+                                        <a href="#" className="theme-select" data-theme="dark" onClick={this.setTheme}>Dark</a>
+                                    </li>
+                                    <li className={"step-item " + (currentTheme === "black" ? "active" : "") }>
+                                        <a href="#" className="theme-select" data-theme="black" onClick={this.setTheme}>Black</a>
+                                    </li>
+                                </ul> */}
                             </div>
                         </div>
                     </div>
