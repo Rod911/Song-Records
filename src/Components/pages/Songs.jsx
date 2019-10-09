@@ -5,18 +5,23 @@ import firebase from 'firebase/app';
 import 'firebase/database';
 import history from '../../history';
 
+String.prototype.capitalize = function () {
+    return this.replace(/(?:^|\s)\S/g, function (a) { return a.toUpperCase(); });
+};
 export class Songs extends Component {
+
+    constructor() {
+        super();
+        this.unlisten = history.listen(() => {
+            this.searchUrl();
+        });
+    }
+
     state = {
         newTitle: "",
         songList: []
     }
-
-    componentWillMount() {
-        this.unlisten = history.listen(() => {
-            this.searchUrl();
-        })
-    }
-
+    
     componentWillUnmount() {
         this.unlisten();
     }
@@ -30,7 +35,7 @@ export class Songs extends Component {
 
     onSubmit = e => {
         e.preventDefault();
-        const term = this.state.newTitle;
+        const term = this.state.newTitle.toLowerCase();
         history.push('/songs?q=' + term);
     }
 
@@ -69,16 +74,19 @@ export class Songs extends Component {
         }
         let songDivs = [];
         songList.forEach(song => {
-            let lyrics = song.Lyrics.substring(0, 80);
+            let lyrics = "";
+            if (song.Lyrics !== "") {
+                lyrics = song.Lyrics[0][0].split('\n');
+            }
             if (song.Name !== "No results") {
                 songDivs.push(
                     <div className="column col-6 col-xl-12" key={song.id} style={ gridCard }>
                         <div className="card" style={ cardStyle }>
                             <div className="card-header">
-                                <div className="card-title h5"> {song.Name} </div>
+                                <div className="card-title h5 text-capitalize"> {song.Name} </div>
                             </div>
                             <div className="card-body" style={{whiteSpace: "pre-line"}}>
-                                {lyrics}
+                                {lyrics.map(line => <div key={lyrics.indexOf(line)}>{line}</div>)}
                             </div>
                             <div className="card-footer">
                                 <Link to={"/songs/view/" + song.id} className="btn float-right">Open</Link>
@@ -93,7 +101,7 @@ export class Songs extends Component {
                             <div className="empty-icon">
                                 <i className="icon icon-flag icon-4x"></i>
                             </div>
-                            <div className="empty-title h5">Did not match any titles</div>
+                            <div className="empty-title h5">Did not find any matches</div>
                         </div>
                     </div>
                 )
@@ -113,7 +121,7 @@ export class Songs extends Component {
                             id="searchInput"
                             placeholder="Search Songs"
                             required
-                            value={this.state.newTitle}
+                            value={this.state.newTitle.capitalize()}
                             onChange={this.onChange}
                             autoComplete="off"
                         />

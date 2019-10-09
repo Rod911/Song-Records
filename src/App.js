@@ -11,6 +11,7 @@ import ForgotPass from './Components/pages/ForgotPass';
 import Songs from './Components/pages/Songs';
 import AddSong from './Components/pages/AddSong';
 import ViewSong from './Components/pages/ViewSong';
+import AllSongs from './Components/pages/AllSongs'
 
 import Header from "./Components/Header";
 import DatePicker from "./Components/DatePicker";
@@ -412,9 +413,18 @@ class App extends Component {
 					<Route
 						exact path="/songs/all"
 						render={() => (
-							<div className="container">
-								<h3>Under construction ❤</h3>
-							</div>
+							<React.Fragment>
+								{
+									this.state.pass !== false ?
+										(
+											<AllSongs
+												sector={this.state.user.sector || ""}
+											/>
+										) : (
+											<h2>Sign in to continue</h2>
+										)
+								}
+							</React.Fragment>
 						)}
 					/>
 

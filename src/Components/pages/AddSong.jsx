@@ -2,39 +2,141 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import './addSong.css';
 
-export class AddSong extends Component {
+class LyricStanza extends Component {
+
+	onChange = (pageIndex, stanzaIndex, data) => {
+		const section = document.getElementById("section-" + pageIndex + "-" + stanzaIndex);
+		section.style.height = 'auto';
+		section.style.height = (section.scrollHeight + 2) + 'px';
+		this.props.stanzaUpdate(pageIndex, stanzaIndex, data);
+	};
+
+	render() {
+		const stanzaIndex = this.props.stanzaIndex;
+		const pageIndex = this.props.pageIndex;
+		return (
+			<textarea
+				className="form-input lyrics-section"
+				name={"stanza-" + stanzaIndex}
+				onChange={e => { this.onChange(pageIndex, stanzaIndex, e.target.value) }}
+				id={"section-" + pageIndex + "-" + stanzaIndex}
+				key={"stanza-" + pageIndex + "-" + stanzaIndex}
+				placeholder={"Stanza " + (stanzaIndex + 1)}
+				required
+			></textarea>
+		)
+	}
+}
+
+LyricStanza.propTypes = {
+	stanzaIndex: PropTypes.number.isRequired,
+	pageIndex: PropTypes.number.isRequired,
+	stanzaUpdate: PropTypes.func.isRequired
+}
+
+class LyricPage extends Component {
 	state = {
-		title: "",
-		lyrics: []
+		lyricStanzaCount: 1,
+		pageIndex: -1
 	};
-
-	onChange = (field, data) => {
-		this.setState({ [field]: data })
-		this.dismissToast();
-	};
-
-	addSongSubmit = (e) => {
-		e.preventDefault();
-		if (this.state.lyrics !== "" && this.state.title !== "") {
-			this.props.addSongSubmit(this.state.title, this.state.lyrics);
-			this.setState({ title: "", lyrics: "" })
-		}
-	}
-
-	dismissToast = () => {
-		this.props.dismissToast();
-	}
 
 	componentDidMount() {
-		document.getElementById("lyricsSection").addEventListener("input", e => {
-			const text = e.target.innerText;
-			console.log(text.split("\n"));
-			// if(text)
-			this.setState({ lyrics: text });
-		})
+		this.setState({ pageIndex: this.props.pageIndex });
+	}
+
+	addStanza = () => {
+		this.setState({ lyricStanzaCount: this.state.lyricStanzaCount + 1 });
 	}
 
 	render() {
+		const pageIndex = this.state.pageIndex;
+		let stanzas = [];
+		for (let index = 0; index < this.state.lyricStanzaCount; index++) {
+			stanzas.push(
+				<LyricStanza
+					pageIndex={this.state.pageIndex}
+					stanzaIndex={index}
+					key={index}
+					stanzaUpdate={this.props.stanzaUpdate}
+				/>
+			)
+		}
+		return <div
+			className="lyric-page"
+			key={"page-" + pageIndex}
+		>
+			<h4>Page {pageIndex + 1}</h4>
+			<div className="stanzas">
+				{stanzas}
+			</div>
+			<button className="btn btn-primary add-stanza" type="button" onClick={() => this.addStanza()} >Add section/stanza</button>
+		</div>;
+	}
+
+}
+
+LyricPage.propTypes = {
+	pageIndex: PropTypes.number.isRequired,
+	stanzaUpdate: PropTypes.func.isRequired
+}
+
+export class AddSong extends Component {
+
+	state = {
+		title: "",
+		lyricsPageCount: 1,
+		pages: [[""]]
+	};
+
+	onChange = (field, data) => {
+		this.setState({ [field]: data });
+		this.dismissToast();
+	};
+
+	addPage = () => {
+		// let lyricsPages = [...this.state.lyricsPages, this.createPage(this.state.pageCount)];
+		let pages = [...this.state.pages];
+		pages.push([""]);
+		this.setState({
+			lyricsPageCount: (this.state.lyricsPageCount + 1),
+			pages: [...pages]
+		});
+	}
+
+	stanzaUpdate = (pageIndex, stanzaIndex, data) => {
+		let pages = [...this.state.pages];
+		pages[pageIndex][stanzaIndex] = data;
+		this.setState({ pages: [...pages] })
+	}
+
+	addSongSubmit = (e) => {
+		// e.preventDefault();
+		if (this.state.title !== "") {
+			this.props.addSongSubmit(this.state.title.toLowerCase(), this.state.pages);
+			this.setState({
+				title: "",
+				lyricsPageCount: 0,
+				pages: []
+			},this.addPage);
+		} else {
+			return false;
+		}
+	}
+
+	dismissToast = () => this.props.dismissToast()
+
+	render() {
+		const pageCount = this.state.lyricsPageCount;
+		const pages = [];
+		for (let i = 0; i < pageCount; i++) {
+			pages.push(
+				<LyricPage
+					pageIndex={i}
+					key={i}
+					stanzaUpdate={this.stanzaUpdate}
+				/>)
+		}
+
 		const songAdded = this.props.songAdded;
 		let toastDiv;
 		if (songAdded.new) {
@@ -74,28 +176,15 @@ export class AddSong extends Component {
 							onChange={e => { this.onChange("title", e.target.value) }}
 							required
 						/>
-						{/* <textarea
-							className="form-input"
-							name="songLyrics"
-							id="singLyrics"
-							rows="10"
-							value={this.state.lyrics}
-							placeholder="Song Lyrics"
-							onChange={e => { this.onChange("lyrics", e.target.value) }}
-							required
-						></textarea> */}
-						<div className="lyricsInput" onClick={() => { document.querySelectorAll(".lyricsSection")[document.querySelectorAll(".lyricsSection").length - 1].focus() }}>
-							<h4 className="lyricHead">Lyrics:</h4>
-							<div className="lyricsSection" id="lyricsSection" contentEditable suppressContentEditableWarning={true}>
-								<div><br /></div>
-							</div>
+						<div className="lyricsSection">
+							{pages}
 						</div>
 					</div>
 				</form>
 				<div className="fabContainer">
-					<button role="button" className="btn btn-primary"><i className="icon icon-plus"></i></button>
+					<button className="btn btn-primary add-page" onClick={this.addPage} >Add Page</button>
 				</div>
-				<input type="submit" value="Add" className="btn btn-block" />
+				<input type="submit" value="Add" onClick={this.addSongSubmit} className="btn btn-block" />
 
 				<div id="toastContainer">
 					{toastDiv}

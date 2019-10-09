@@ -15,16 +15,20 @@
   margin-bottom: .5rem;
 }
 
-.lyricsInput{
-  font-size: 1.2rem;
-  height: 50vh;
-  overflow: auto;
+.lyrics-section{
+  font-size: 1.2rem !important;
+  border: none !important;
+  margin: 1rem;
+  resize: none;
 }
 
 .lyricsSection{
-  height: 8rem;
   padding: 1rem 0;
   line-height: 1.6rem;
+}
+
+textarea {
+  outline: none;
 }
 
 .lyricsSection > *{
@@ -35,12 +39,22 @@
   position: relative;
 }
 
-.fabContainer > button{
+.fabContainer > .add-page{
   position: absolute;
-  right: 1rem;
   bottom: 1rem;
-  border-radius: 50%;
+  left: 2rem;
+  border-radius: .2rem;
   box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-  font-size: 1.5rem;
-  height: 2.5rem;
+}
+
+.lyric-page {
+  position: relative;
+}
+
+.lyric-page > .add-stanza {
+  position: absolute;
+  bottom: -2rem;
+  right: 1rem;
+  border-radius: .2rem;
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
 }

@@ -30,25 +30,33 @@ export class ViewSong extends Component {
         let infoCard;
         if (this.state.dbLoaded) {
             if (this.state.songFound) {
-                infoCard = 
-                <div className="column col-6 col-xl-12" style={gridCard}>
-                    <div className="card" style={cardStyle}>
-                        <div className="card-header">
-                            <div className="card-title h5"> {this.state.songTitle} </div>
-                        </div>
-                        <div className="card-body" style={{ whiteSpace: "pre-line" }}>
-                            {this.state.songLyrics}
-                        </div>
-                        <div className="card-footer">
-                            <div className="btn-group btn-group-block">
-                                <button className="btn btn-success disabled">Edit</button>
-                                <button className="btn btn-error disabled">Edit</button>
+                infoCard =
+                    <div className="column col-6 col-xl-12" style={gridCard}>
+                        <div className="card" style={cardStyle}>
+                            <div className="card-header">
+                                <div className="card-title h5 text-capitalize"> {this.state.songTitle} </div>
+                            </div>
+                            <div className="card-body" style={{ whiteSpace: "pre-line" }}>
+                                {this.state.songLyrics.map(page =>
+                                    <div className="lyric-page-block mt-1 px-1 py-1">
+                                        {page.map(stanza =>
+                                            <div className="lyric-stanza-block mt-2 px-1 py-1">
+                                                {stanza}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                            <div className="card-footer">
+                                <div className="btn-group btn-group-block">
+                                    <button className="btn btn-success disabled">Edit</button>
+                                    <button className="btn btn-error disabled">Edit</button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
             } else {
-                infoCard = 
+                infoCard =
                     <div className="column col-6 col-xl-12" key="empty" style={gridCard}>
                         <div className="empty" style={cardStyle}>
                             <div className="empty-icon">
@@ -86,7 +94,7 @@ const gridCard = {
 
 const cardStyle = {
     boxShadow: "0 0.25rem 1rem rgba(48,55,66,.15)"
-} 
+}
 
 ViewSong.propTypes = {
     sector: PropTypes.string.isRequired,
