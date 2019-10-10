@@ -40,9 +40,9 @@ const SortableContainer = sortableContainer(({ children }) => {
 });
 
 export class Categories extends Component {
-	
+
 	state = {
-		newTitle : ""
+		newTitle: ""
 	}
 
 	onSortEnd = ({ oldIndex, newIndex }) => {
@@ -53,23 +53,23 @@ export class Categories extends Component {
 		}));
 		this.props.rearrange(this.state.categories);
 	};
-	
+
 	onChange = (e) => this.setState({ newTitle: e.target.value });
-	
+
 	onSubmit = (e) => {
 		e.preventDefault();
-		if(this.state.newTitle !== ""){
+		if (this.state.newTitle !== "") {
 			this.props.addCategory(this.state.newTitle);
-			this.setState({newTitle: ""});
+			this.setState({ newTitle: "" });
 		}
 	}
 	render() {
 		let list = this.props.categories;
 		let categories = [];
 		let user = this.props.user;
-		if (list[0] === false){
+		if (list[0] === false) {
 			categories.push(<div className="loading loading-lg" key="loading" />);
-		} else if (list[0] === null) { 
+		} else if (list[0] === null) {
 			categories.push(
 				<div className="empty">
 					<p className="empty-title h5">Category list is empty</p>
@@ -95,7 +95,7 @@ export class Categories extends Component {
 							}
 						</>
 					);
-					
+
 					categories.push(div);
 				}
 			});
@@ -123,29 +123,46 @@ export class Categories extends Component {
 						</div>
 						{
 							(this.props.duplicateCategoryAdded) && (
-							<div className="toast toast-warning">
-								That name is already taken
+								<div className="toast toast-warning">
+									That name is already taken
 							</div>)
 						}
 						<div className="divider" />
 					</form>
 				)}
 
-				<SortableContainer onSortEnd={this.onSortEnd} useDragHandle>
+				{(user === "coordinator" || user === "admin") ? (
+
+
+					<SortableContainer onSortEnd={this.onSortEnd} useDragHandle>
 						{categories.map((value, index) => {
 							let key = "";
-						try {
-							key = value;
-							key = value.props.children[0].key;
-							
-						} finally {
-							return (
-								<SortableItem key={key} index={index} value={value} />
-							)
-						}
-						
-					})}
-				</SortableContainer>
+							try {
+								key = value;
+								key = value.props.children[0].key;
+
+							} finally {
+								return (
+									<SortableItem key={key} index={index} value={value} />
+								)
+							}
+
+						})}
+					</SortableContainer>
+				) : (
+						categories.map((value, index) => {
+							let key = "";
+							try {
+								key = value;
+								key = value.props.children[0].key;
+
+							} finally {
+								return (
+									<div key={key} index={index}> {value} </div>
+								)
+							}
+						 })
+				)}
 				<Link className="btn btn-link btn-block" to="/songs" >Go to song list</Link>
 			</div>
 		);

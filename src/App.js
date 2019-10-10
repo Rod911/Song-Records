@@ -32,6 +32,7 @@ class App extends Component {
 		this.state = {
 			categories: [false],
 			inputs: {},
+			songInDB: {},
 			serverData: {},
 			date: null,
 			user: { id: null },
@@ -64,6 +65,7 @@ class App extends Component {
 							filteredArray = snap.val().filter(el => el);
 						}
 						this.setState({ categories: [...filteredArray] });
+
 					});
 				}
 			} else {
@@ -123,22 +125,58 @@ class App extends Component {
 
 	inputUpdate = (inp, data) => {
 		let currInputs = this.state.inputs;
+		let currDB = {};
+
+		let target = inp.target.id;
+
 		if (data) {
-			currInputs[inp.target.id] = data;
+			currInputs[target] = data;
 		} else {
-			currInputs[inp.target.id] = null;
+			currInputs[target] = null;
 		}
 
-		this.setState({ inputs: currInputs, edits: "modified" });
+		currDB[target] = "loading"
+
+		console.log(target);
+
+		const database = firebase.database();
+		const rootRef = database.ref("sectors/" + this.state.sector + "/songs");
+		let songsRef = rootRef.orderByChild("Name").equalTo(data.toLowerCase());
+		songsRef.on("value", snap => {
+			if (snap.exists()) {
+				currDB[target] = "icon icon-check";
+			} else {
+				currDB[target] = "icon icon-flag";
+			}
+			this.setState({ songInDB: currDB });
+		});
+
+		this.setState({ inputs: currInputs, songInDB: currDB, edits: "modified" });
 	}
 
 	updateDate = (date) => {
 		this.setState({ date: date });
+		let currDB = {};
+
 		let data = firebase.database().ref("sectors/" + this.state.user.sector + "/data").child(date);
 		data.on("value", snap => {
 			let inputs = (snap.val() || {});
 			this.setState({ inputs: { ...inputs }, serverData: { ...inputs }, edits: "saved" });
+			
+			Object.keys(inputs).forEach(key => {
+				currDB[key] = "loading";
+				let songsRef = firebase.database().ref("sectors/" + this.state.user.sector + "/songs").orderByChild("Name").equalTo(inputs[key].toLowerCase());
+				songsRef.on("value", snap => {
+					if (snap.exists()) {
+						currDB[key] = "icon icon-check";
+					} else {
+						currDB[key] = "icon icon-flag";
+					}
+					this.setState({songInDB: currDB})
+				});
+			});
 		});
+
 	}
 
 	loginFormSubmit = (form) => {
@@ -295,7 +333,7 @@ class App extends Component {
 			default: stateIcon = "";
 		}
 
-		const theme = this.state.theme;
+		const theme = this.state.theme || "light";
 
 		return (
 			<Router history={history}>
@@ -319,6 +357,7 @@ class App extends Component {
 													<Entries
 														categories={this.state.categories}
 														data={{ ...this.state.inputs }}
+														dbResult={{...this.state.songInDB}}
 														onChange={this.inputUpdate}
 														updateDate={this.updateDate}
 														clear={this.clear}

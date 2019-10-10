@@ -21,6 +21,11 @@ code {
     monospace;
 }
 
+.tile-title,
+.tile-subtitle {
+  margin: 0 0 0.2rem .3rem;
+}
+
 .step {
   padding: 0.5rem 0 1rem 0;
 }
