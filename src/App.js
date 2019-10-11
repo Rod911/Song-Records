@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { Router, Route } from "react-router-dom";
 
 import firebase from "firebase/app";
 import "firebase/database";
@@ -25,6 +25,8 @@ import "spectre.css";
 import "spectre.css/dist/spectre-icons.css";
 import "./index.css";
 
+import packageJson from '../package.json';
+
 class App extends Component {
 
 	constructor(props) {
@@ -41,7 +43,9 @@ class App extends Component {
 			edits: "saved",
 			duplicateCategoryAdded: false,
 			songAdded: { new: false, added: false, data: null, err: "" },
-			theme: ""
+			theme: "",
+			appVer: null,
+			latestVer: null,
 		};
 		firebase.initializeApp(config);
 	}
@@ -73,6 +77,7 @@ class App extends Component {
 			}
 		});
 		this.setState({ theme: localStorage.getItem("theme") });
+		database.ref('app-ver').once("value", snap => { this.setState({ latestVer: snap.val(), appVer: packageJson.version }) });
 	}
 
 	del = id => {
@@ -135,9 +140,7 @@ class App extends Component {
 			currInputs[target] = null;
 		}
 
-		currDB[target] = "loading"
-
-		console.log(target);
+		currDB[target] = "loading";
 
 		const database = firebase.database();
 		const rootRef = database.ref("sectors/" + this.state.sector + "/songs");
@@ -162,7 +165,7 @@ class App extends Component {
 		data.on("value", snap => {
 			let inputs = (snap.val() || {});
 			this.setState({ inputs: { ...inputs }, serverData: { ...inputs }, edits: "saved" });
-			
+
 			Object.keys(inputs).forEach(key => {
 				currDB[key] = "loading";
 				let songsRef = firebase.database().ref("sectors/" + this.state.user.sector + "/songs").orderByChild("Name").equalTo(inputs[key].toLowerCase());
@@ -172,7 +175,7 @@ class App extends Component {
 					} else {
 						currDB[key] = "icon icon-flag";
 					}
-					this.setState({songInDB: currDB})
+					this.setState({ songInDB: currDB })
 				});
 			});
 		});
@@ -357,7 +360,7 @@ class App extends Component {
 													<Entries
 														categories={this.state.categories}
 														data={{ ...this.state.inputs }}
-														dbResult={{...this.state.songInDB}}
+														dbResult={{ ...this.state.songInDB }}
 														onChange={this.inputUpdate}
 														updateDate={this.updateDate}
 														clear={this.clear}
@@ -500,7 +503,11 @@ class App extends Component {
 						}}
 					/>
 				</div>
-				<Footer currentTheme={theme} />
+				<Footer
+					currentTheme={theme}
+					appVer={this.state.appVer}
+					latestVer={this.state.latestVer}
+				/>
 			</Router>
 		);
 	}

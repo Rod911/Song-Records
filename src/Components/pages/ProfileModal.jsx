@@ -65,10 +65,10 @@ export class ProfileModal extends Component {
         const initials = userName.split(' ').map(x => x.charAt(0)).join('').substr(0, 2).toUpperCase();
         return (
             <div className="modal modal-lg" id="profile">
-                <a className="modal-overlay" href="#" aria-label="Close" ></a>
+                <a className="modal-overlay" href="# " aria-label="Close" ><span className="d-invisible">Close</span></a>
                 <div className="modal-container" role="document">
                     <div className="modal-header">
-                        <a className="btn btn-clear float-right" href="#" aria-label="Close"></a>
+                        <a className="btn btn-clear float-right" href="# " aria-label="Close"><span className="d-invisible">Close</span></a>
                         <div className="modal-title h5">Profile</div>
                     </div>
                     <div className="modal-body">
@@ -88,7 +88,7 @@ export class ProfileModal extends Component {
                                                 <div className="tile-subtitle" id="inpEmail" >{user.id}</div>
                                             </div>
                                             <div className="tile-action">
-                                                <button role="button" className="btn btn-link btn-action btn-lg tooltip tooltip-left" data-tooltip="Edit E-mail" onClick={(e) => this.editContent("inpEmail", "email", e)} ><i className="icon icon-edit"></i></button>
+                                                <button type="button" className="btn btn-link btn-action btn-lg tooltip tooltip-left" data-tooltip="Edit E-mail" onClick={(e) => this.editContent("inpEmail", "email", e)} ><i className="icon icon-edit"></i></button>
                                             </div>
                                         </div>
                                         <div className="tile tile-centered" style={tileStyle} >
@@ -97,7 +97,7 @@ export class ProfileModal extends Component {
                                                 <div className="tile-subtitle" id="inpPassword" ></div>
                                             </div>
                                             <div className="tile-action">
-                                                <button role="button" className="btn btn-link btn-action btn-lg tooltip tooltip-left" data-tooltip="Edit Password" onClick={(e) => this.editContent("inpPassword", "password", e)} ><i className="icon icon-edit"></i></button>
+                                                <button type="button" className="btn btn-link btn-action btn-lg tooltip tooltip-left" data-tooltip="Edit Password" onClick={(e) => this.editContent("inpPassword", "password", e)} ><i className="icon icon-edit"></i></button>
                                             </div>
                                         </div>
                                         <div className="tile tile-centered" style={tileStyle} >
@@ -106,7 +106,7 @@ export class ProfileModal extends Component {
                                                 <div className="tile-subtitle" id="inpUname" >{userName}</div>
                                             </div>
                                             <div className="tile-action">
-                                                <button role="button" className="btn btn-link btn-action btn-lg tooltip tooltip-left" data-tooltip="Edit Display Name" onClick={(e) => this.editContent("inpUname", "text", e)} ><i className="icon icon-edit"></i></button>
+                                                <button type="button" className="btn btn-link btn-action btn-lg tooltip tooltip-left" data-tooltip="Edit Display Name" onClick={(e) => this.editContent("inpUname", "text", e)} ><i className="icon icon-edit"></i></button>
                                             </div>
                                         </div>
                                         <div className="tile tile-centered" style={tileStyle} >
@@ -118,7 +118,7 @@ export class ProfileModal extends Component {
                                     </div>
                                     <div className="panel-footer btn-group btn-group-block">
                                         <button className="btn btn-primary btn-block" >Save</button>
-                                        <a className="btn btn-block" href="#">Close</a>
+                                        <a className="btn btn-block" href="# " aria-label="Close"><span className="d-invisible">Close</span></a>
                                     </div>
                                 </form>
                             </div>

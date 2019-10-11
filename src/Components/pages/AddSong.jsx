@@ -45,7 +45,17 @@ class LyricPage extends Component {
 	}
 
 	addStanza = () => {
-		this.setState({ lyricStanzaCount: this.state.lyricStanzaCount + 1 });
+		this.setState({
+			lyricStanzaCount: this.state.lyricStanzaCount + 1
+		});
+	}
+
+	removeStanza = () => {
+		if (this.state.lyricStanzaCount > 0) {
+			this.setState({
+				lyricStanzaCount: this.state.lyricStanzaCount - 1
+			});
+		}
 	}
 
 	render() {
@@ -69,7 +79,11 @@ class LyricPage extends Component {
 			<div className="stanzas">
 				{stanzas}
 			</div>
-			<button className="btn btn-primary add-stanza" type="button" onClick={() => this.addStanza()} >Add section/stanza</button>
+			<div className="input-group add-stanza">
+				<button type="button" className="btn btn-primary input-group-btn" onClick={this.removeStanza}>-</button>
+				<button type="button" className="btn btn-primary input-group-btn" disabled>Stanza</button>
+				<button type="button" className="btn btn-primary input-group-btn" onClick={this.addStanza}>+</button>
+			</div>
 		</div>;
 	}
 
@@ -88,19 +102,33 @@ export class AddSong extends Component {
 		pages: [[""]]
 	};
 
+	componentDidMount() {
+		document.getElementById('title').focus();
+	}
+
 	onChange = (field, data) => {
 		this.setState({ [field]: data });
 		this.dismissToast();
 	};
 
 	addPage = () => {
-		// let lyricsPages = [...this.state.lyricsPages, this.createPage(this.state.pageCount)];
 		let pages = [...this.state.pages];
 		pages.push([""]);
 		this.setState({
 			lyricsPageCount: (this.state.lyricsPageCount + 1),
 			pages: [...pages]
 		});
+	}
+
+	removePage = () => {
+		let pages = [...this.state.pages];
+		pages.pop();
+		if (this.state.lyricsPageCount > 0) {
+			this.setState({
+				lyricsPageCount: (this.state.lyricsPageCount - 1),
+				pages: [...pages]
+			});
+		}
 	}
 
 	stanzaUpdate = (pageIndex, stanzaIndex, data) => {
@@ -117,7 +145,7 @@ export class AddSong extends Component {
 				title: "",
 				lyricsPageCount: 0,
 				pages: []
-			},this.addPage);
+			}, this.addPage);
 		} else {
 			return false;
 		}
@@ -163,7 +191,7 @@ export class AddSong extends Component {
 		}
 		return (
 			<div className="container column col-6 col-md-8 col-xs-12">
-				<form method="post" onSubmit={this.addSongSubmit}>
+				<form method="post" onSubmit={this.addSongSubmit} id="song-form">
 					<h3>Add new song</h3>
 					<div className="songContainer">
 						<input
@@ -180,11 +208,15 @@ export class AddSong extends Component {
 							{pages}
 						</div>
 					</div>
+					<div className="fabContainer">
+						<div className="input-group add-page">
+							<button type="button" className="btn btn-primary input-group-btn" onClick={this.removePage}>-</button>
+							<button type="button" className="btn btn-primary input-group-btn" disabled>Pages</button>
+							<button type="button" className="btn btn-primary input-group-btn" onClick={this.addPage}>+</button>
+						</div>
+					</div>
+					<input type="submit" value="Add" onClick={this.addSongSubmit} className="btn btn-block" />
 				</form>
-				<div className="fabContainer">
-					<button className="btn btn-primary add-page" onClick={this.addPage} >Add Page</button>
-				</div>
-				<input type="submit" value="Add" onClick={this.addSongSubmit} className="btn btn-block" />
 
 				<div id="toastContainer">
 					{toastDiv}

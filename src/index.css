@@ -23,7 +23,7 @@ code {
 
 .tile-title,
 .tile-subtitle {
-  margin: 0 0 0.2rem .3rem;
+  margin: 0 0 0.2rem 0.3rem;
 }
 
 .step {
@@ -31,7 +31,7 @@ code {
 }
 
 .footer {
-  padding: 0.5rem;
+  padding: 0.3rem 0.5rem;
   text-align: center;
   border: none;
   border-top: 1px solid #d8d8d88e;
@@ -41,6 +41,16 @@ code {
 .footer > .card-subtitle {
   color: #d8d8d8ea;
   margin: 0 auto;
+}
+
+.footer .footer-item {
+  margin: 0.2rem;
+}
+
+.footer .d-invisible {
+  width: 0;
+  margin: 0.2rem 0;
+  padding: 0.2rem 0;
 }
 
 /* Light */

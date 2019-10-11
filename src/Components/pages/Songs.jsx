@@ -8,6 +8,7 @@ import history from '../../history';
 String.prototype.capitalize = function () {
     return this.replace(/(?:^|\s)\S/g, function (a) { return a.toUpperCase(); });
 };
+
 export class Songs extends Component {
 
     constructor() {
