@@ -31,16 +31,20 @@ export class ViewSong extends Component {
         if (this.state.dbLoaded) {
             if (this.state.songFound) {
                 infoCard =
-                    <div className="column col-6 col-xl-12" style={gridCard}>
+                    <div className="column col-6 col-sm-12" style={gridCard}>
                         <div className="card" style={cardStyle}>
                             <div className="card-header">
-                                <div className="card-title h5 text-capitalize"> {this.state.songTitle} </div>
+                                <div className="card-title h3 text-capitalize"> <u>{this.state.songTitle} </u></div>
                             </div>
-                            <div className="card-body" style={{ whiteSpace: "pre-line" }}>
+                            <div className="card-body" style={{ whiteSpace: "pre-line", fontSize: "1rem" }}>
                                 {this.state.songLyrics.map(page =>
-                                    <div className="lyric-page-block mt-1 px-1 py-1">
+                                    <div
+                                        key={this.state.songLyrics.indexOf(page)}
+                                        className="lyric-page-block mb-2 py-1">
                                         {page.map(stanza =>
-                                            <div className="lyric-stanza-block mt-2 px-1 py-1">
+                                            <div
+                                                key={page.indexOf(stanza)}
+                                                className="lyric-stanza-block mb-2 px-1 py-1">
                                                 {stanza}
                                             </div>
                                         )}
@@ -48,16 +52,16 @@ export class ViewSong extends Component {
                                 )}
                             </div>
                             <div className="card-footer">
-                                <div className="btn-group btn-group-block">
-                                    <button className="btn btn-success disabled">Edit</button>
-                                    <button className="btn btn-error disabled">Edit</button>
+                                <div className="btn-group btn-group-block" title="Under Construction ">
+                                    <button className="btn btn-primary disabled">Edit</button>
+                                    <button className="btn btn-error disabled">Delete</button>
                                 </div>
                             </div>
                         </div>
                     </div>
             } else {
                 infoCard =
-                    <div className="column col-6 col-xl-12" key="empty" style={gridCard}>
+                    <div className="column col-6 col-sm-12" key="empty" style={gridCard}>
                         <div className="empty" style={cardStyle}>
                             <div className="empty-icon">
                                 <i className="icon icon-stop icon-4x"></i>
@@ -69,7 +73,7 @@ export class ViewSong extends Component {
             }
         } else {
             infoCard =
-                <div className="column col-6 col-xl-12" key="empty" style={gridCard}>
+                <div className="column col-6 col-sm-12" key="empty" style={gridCard}>
                     <div className="empty" style={cardStyle}>
                         <div className="loading loading-lg" key="loading" />
                     </div>

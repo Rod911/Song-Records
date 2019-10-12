@@ -22,16 +22,16 @@ export class Songs extends Component {
         newTitle: "",
         songList: []
     }
-    
+
     componentWillUnmount() {
         this.unlisten();
     }
 
-    componentDidMount() { 
+    componentDidMount() {
         this.sector = this.props.sector;
         this.searchUrl();
     }
-    
+
     onChange = (e) => this.setState({ newTitle: e.target.value });
 
     onSubmit = e => {
@@ -44,7 +44,7 @@ export class Songs extends Component {
         const query = new URLSearchParams(history.location.search);
         const title = query.get('q') || "";
         this.setState({ newTitle: title });
-        
+
         if (title !== "") {
             const database = firebase.database();
             const rootRef = database.ref("sectors/" + this.sector + "/songs");
@@ -60,7 +60,7 @@ export class Songs extends Component {
                     });
                     this.setState({ songList: list });
                 } else {
-                    this.setState({ songList: [{Name: "No results", Lyrics: "", id: 0 }] });
+                    this.setState({ songList: [{ Name: "No results", Lyrics: "", id: 0 }] });
                 }
             });
         } else {
@@ -70,24 +70,24 @@ export class Songs extends Component {
 
     render() {
         let songList = [];
-        if (this.state.songList !== null) { 
+        if (this.state.songList !== null) {
             songList = this.state.songList
         }
         let songDivs = [];
         songList.forEach(song => {
             let lyrics = "";
             if (song.Lyrics !== "") {
-                lyrics = song.Lyrics[0][0].split('\n');
+                lyrics = song.Lyrics[0][0];
             }
             if (song.Name !== "No results") {
                 songDivs.push(
-                    <div className="column col-6 col-xl-12" key={song.id} style={ gridCard }>
-                        <div className="card" style={ cardStyle }>
+                    <div className="column col-6 col-xl-12" key={song.id} style={gridCard}>
+                        <div className="card" style={cardStyle}>
                             <div className="card-header">
                                 <div className="card-title h5 text-capitalize"> {song.Name} </div>
                             </div>
-                            <div className="card-body" style={{whiteSpace: "pre-line"}}>
-                                {lyrics.map(line => <div key={lyrics.indexOf(line)}>{line}</div>)}
+                            <div className="card-body" style={{ whiteSpace: "pre-line" }}>
+                                {lyrics}
                             </div>
                             <div className="card-footer">
                                 <Link to={"/songs/view/" + song.id} className="btn float-right">Open</Link>
@@ -97,8 +97,8 @@ export class Songs extends Component {
                 )
             } else {
                 songDivs.push(
-                    <div className="column col-6 col-xl-12" key="empty" style={ gridCard }>
-                        <div className="empty" style={ cardStyle }>
+                    <div className="column col-6 col-xl-12" key="empty" style={gridCard}>
+                        <div className="empty" style={cardStyle}>
                             <div className="empty-icon">
                                 <i className="icon icon-flag icon-4x"></i>
                             </div>
@@ -134,7 +134,7 @@ export class Songs extends Component {
                     </div>
                 </form>
                 <div className="songList">
-                    {   
+                    {
                         songList.length === 0 ? (
                             <div className="empty">
                                 <div className="empty-icon">
@@ -144,21 +144,21 @@ export class Songs extends Component {
                             </div>
                         ) : (
 
-                            <div className = "panel" >
-                                <div className = "panel-header">
-                                    <div className = "panel-title h5">Results</div>
-                                </div>
-                                <div className="panel-body columns" style={ gridLayout }>
-                                    { songDivs }
-                                </div>
-                            </div >
-                        )
+                                <div className="panel" >
+                                    <div className="panel-header">
+                                        <div className="panel-title h5">Results</div>
+                                    </div>
+                                    <div className="panel-body columns" style={gridLayout}>
+                                        {songDivs}
+                                    </div>
+                                </div >
+                            )
                     }
                 </div>
                 <div className="btn-group btn-group-block">
                     <Link className="btn" to="/songs/add">Add new</Link>
-                    <Link className="btn" to="/songs/all">See all</Link>
-                </div>  
+                    <Link className="btn" to="/songs/all/1">See all</Link>
+                </div>
             </div>
         )
     }
@@ -174,7 +174,7 @@ const gridCard = {
 
 const cardStyle = {
     boxShadow: "0 0.25rem 1rem rgba(48,55,66,.15)"
-} 
+}
 
 Songs.propTypes = {
     sector: PropTypes.string.isRequired

@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { createBrowserHistory } from 'history';
+import { Offline } from "react-detect-offline";
 
 class Header extends Component {
 	switchTab = (currentPath) => {
@@ -9,6 +10,7 @@ class Header extends Component {
 			nav.classList.remove("active");
 		}
 		document.getElementById(currentPath).classList.add("active");
+		document.getElementById(currentPath).focus();
 	}
 
 	navigate(locationPath) {
@@ -33,7 +35,7 @@ class Header extends Component {
 	componentWillUnmount() {
 		this.unlisten();
 	}
-	
+
 	componentDidMount() {
 		const history = createBrowserHistory();
 		const location = history.location;
@@ -47,7 +49,7 @@ class Header extends Component {
 			this.navigate(location.pathname);
 		});
 
-		this.navigate(location.pathname);	
+		this.navigate(location.pathname);
 	}
 
 	render() {
@@ -67,6 +69,11 @@ class Header extends Component {
 							<Link className="unfocus" to="/account" onClick={() => this.switchTab("/account")}>Account</Link>
 						</li>
 					</ul>
+					<Offline>
+						<div className="toast toast-error text-center">
+							<h4>Internet Disconnected</h4>
+						</div>
+					</Offline>
 				</header>
 			</div>
 		);

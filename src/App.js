@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Router, Route } from "react-router-dom";
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
 import firebase from "firebase/app";
 import "firebase/database";
@@ -17,9 +17,9 @@ import Header from "./Components/Header";
 import DatePicker from "./Components/DatePicker";
 import Entries from "./Components/Entries";
 import Footer from './Components/Footer';
+import Lost from './Components/Lost';
 
 import config from "./config";
-import history from './history';
 
 import "spectre.css";
 import "spectre.css/dist/spectre-icons.css";
@@ -77,7 +77,7 @@ class App extends Component {
 			}
 		});
 		this.setState({ theme: localStorage.getItem("theme") });
-		database.ref('app-ver').once("value", snap => { this.setState({ latestVer: snap.val(), appVer: packageJson.version }) });
+		database.ref('app-ver').on("value", snap => { this.setState({ latestVer: snap.val(), appVer: packageJson.version }) });
 	}
 
 	del = id => {
@@ -142,18 +142,21 @@ class App extends Component {
 
 		currDB[target] = "loading";
 
-		const database = firebase.database();
-		const rootRef = database.ref("sectors/" + this.state.sector + "/songs");
-		let songsRef = rootRef.orderByChild("Name").equalTo(data.toLowerCase());
-		songsRef.on("value", snap => {
-			if (snap.exists()) {
-				currDB[target] = "icon icon-check";
-			} else {
-				currDB[target] = "icon icon-flag";
-			}
-			this.setState({ songInDB: currDB });
-		});
-
+		if (data === "") {
+			currDB[target] = "";
+		} else {
+			const database = firebase.database();
+			const rootRef = database.ref("sectors/" + this.state.sector + "/songs");
+			let songsRef = rootRef.orderByChild("Name").equalTo(data.toLowerCase());
+			songsRef.on("value", snap => {
+				if (snap.exists()) {
+					currDB[target] = "icon icon-check";
+				} else {
+					currDB[target] = "icon icon-flag";
+				}
+				this.setState({ songInDB: currDB });
+			});
+		}
 		this.setState({ inputs: currInputs, songInDB: currDB, edits: "modified" });
 	}
 
@@ -339,176 +342,176 @@ class App extends Component {
 		const theme = this.state.theme || "light";
 
 		return (
-			<Router history={history}>
+			<BrowserRouter>
 				<div className={"app " + theme} style={{ paddingBottom: "1rem" }}>
 					<Header className="row" />
-					<Route
-						exact path="/"
-						render={props => (
-							<React.Fragment >
-								{
-									this.state.pass !== false ?
-										(
-											<div className="container dataForm column col-8 col-md-12">
-												<form method="post" onSubmit={this.saveData} >
-													<DatePicker
-														updateDate={this.updateDate}
-														date={this.state.date}
-														className="form-group"
-													/>
-													<div className="divider" />
-													<Entries
-														categories={this.state.categories}
-														data={{ ...this.state.inputs }}
-														dbResult={{ ...this.state.songInDB }}
-														onChange={this.inputUpdate}
-														updateDate={this.updateDate}
-														clear={this.clear}
-													/>
-													<div className="divider" />
-													<div className="columns">
-														<div className="column col-9 col-xs-12 col-ml-auto btn-group btn-group-block input-group">
-															<input type="submit" value="Save" className="btn btn-primary btn-block" />
-															<input type="button" value="Cancel" className="btn btn-secondary btn-block" onClick={this.undoEdits} />
-															<span className="input-group-addon"><i className={"icon icon-" + stateIcon}></i></span>
+					<Switch>
+						<Route
+							exact path="/"
+							render={props => (
+								<React.Fragment >
+									{
+										this.state.pass !== false ?
+											(
+												<div className="container dataForm column col-8 col-md-12">
+													<form method="post" onSubmit={this.saveData} >
+														<DatePicker
+															updateDate={this.updateDate}
+															date={this.state.date}
+															className="form-group"
+														/>
+														<div className="divider" />
+														<Entries
+															categories={this.state.categories}
+															data={{ ...this.state.inputs }}
+															dbResult={{ ...this.state.songInDB }}
+															onChange={this.inputUpdate}
+															updateDate={this.updateDate}
+															clear={this.clear}
+														/>
+														<div className="divider" />
+														<div className="columns">
+															<div className="column col-9 col-xs-12 col-ml-auto btn-group btn-group-block input-group">
+																<input type="submit" value="Save" className="btn btn-primary btn-block" />
+																<input type="button" value="Cancel" className="btn btn-secondary btn-block" onClick={this.undoEdits} />
+																<span className="input-group-addon"><i className={"icon icon-" + stateIcon}></i></span>
+															</div>
 														</div>
-													</div>
-												</form>
-											</div>
-										) : (
-											<h2>Sign in to continue</h2>
-										)
+													</form>
+												</div>
+											) : (
+												<h2>Sign in to continue</h2>
+											)
+									}
+								</React.Fragment>
+							)}
+						/>
+
+						<Route
+							path="/categories"
+							render={props => (
+								<React.Fragment>
+									{
+										this.state.pass !== false ?
+											(
+												<Categories
+													categories={this.state.categories}
+													user={this.state.user.type}
+													del={this.del}
+													addCategory={this.addCategory}
+													duplicateCategoryAdded={this.state.duplicateCategoryAdded}
+													rearrange={this.setCategories}
+												/>
+											) : (
+												<h2>Sign in to continue</h2>
+											)
+									}
+								</React.Fragment>
+							)}
+						/>
+
+						<Route
+							exact path="/account"
+							render={props => (
+								<Account
+									loggedIn={this.state.pass}
+									attemptLogin={this.state.attemptLogin}
+									user={this.state.user}
+									auth={firebase.auth().currentUser}
+									loginFormSubmit={this.loginFormSubmit}
+									signOut={this.signOut}
+									verifyUser={this.verifyUser}
+									changeTheme={this.changeTheme}
+									currentTheme={theme}
+								/>
+							)}
+						/>
+
+						<Route
+							exact path="/account/forgot"
+							render={props => (
+								<ForgotPass
+									forgotSubmit={this.forgotSubmit}
+								/>
+							)}
+						/>
+
+						<Route
+							path="/songs/add"
+							render={() => (
+								<React.Fragment>
+									{
+										this.state.pass !== false ?
+											(
+												<AddSong
+													addSongSubmit={this.addSongSubmit}
+													songAdded={this.state.songAdded}
+													dismissToast={this.dismissToast}
+												/>
+											) : (
+												<h2>Sign in to continue</h2>
+											)
+									}
+								</React.Fragment>
+							)}
+						/>
+
+						<Route
+							exact path={"/songs/all/:page"}
+							render={(props) => {
+								if (this.state.pass !== false) {
+									return (
+										<AllSongs
+											sector={this.state.user.sector || ""}
+										/>)
+								} else {
+									return (<h2>Sign in to continue</h2>)
 								}
-							</React.Fragment>
-						)}
-					/>
+							}}
+						/>
 
-					<Route
-						path="/categories"
-						render={props => (
-							<React.Fragment>
-								{
-									this.state.pass !== false ?
-										(
-											<Categories
-												categories={this.state.categories}
-												user={this.state.user.type}
-												del={this.del}
-												addCategory={this.addCategory}
-												duplicateCategoryAdded={this.state.duplicateCategoryAdded}
-												rearrange={this.setCategories}
-											/>
-										) : (
-											<h2>Sign in to continue</h2>
-										)
+						<Route
+							exact path="/songs"
+							render={() => (
+								<React.Fragment>
+									{
+										this.state.pass !== false ?
+											(
+												<Songs
+													sector={this.state.user.sector || ""}
+												/>
+											) : (
+												<h2>Sign in to continue</h2>
+											)
+									}
+								</React.Fragment>
+							)}
+						/>
+
+						<Route
+							path="/songs/view/:songId"
+							render={(props) => {
+								const id = props.match.params.songId;
+								if (this.state.pass !== false) {
+									return (<ViewSong
+										sector={this.state.user.sector || ""}
+										id={id}
+									/>)
+								} else {
+									return (<h2>Sign in to continue</h2>)
 								}
-							</React.Fragment>
-						)}
-					/>
+							}}
+						/>
 
-					<Route
-						exact path="/account"
-						render={props => (
-							<Account
-								loggedIn={this.state.pass}
-								attemptLogin={this.state.attemptLogin}
-								user={this.state.user}
-								auth={firebase.auth().currentUser}
-								loginFormSubmit={this.loginFormSubmit}
-								signOut={this.signOut}
-								verifyUser={this.verifyUser}
-								changeTheme={this.changeTheme}
-								currentTheme={theme}
-							/>
-						)}
-					/>
-
-					<Route
-						exact path="/account/forgot"
-						render={props => (
-							<ForgotPass
-								forgotSubmit={this.forgotSubmit}
-							/>
-						)}
-					/>
-
-					<Route
-						path="/songs/add"
-						render={() => (
-							<React.Fragment>
-								{
-									this.state.pass !== false ?
-										(
-											<AddSong
-												addSongSubmit={this.addSongSubmit}
-												songAdded={this.state.songAdded}
-												dismissToast={this.dismissToast}
-											/>
-										) : (
-											<h2>Sign in to continue</h2>
-										)
-								}
-							</React.Fragment>
-						)}
-					/>
-
-					<Route
-						exact path="/songs/all"
-						render={() => (
-							<React.Fragment>
-								{
-									this.state.pass !== false ?
-										(
-											<AllSongs
-												sector={this.state.user.sector || ""}
-											/>
-										) : (
-											<h2>Sign in to continue</h2>
-										)
-								}
-							</React.Fragment>
-						)}
-					/>
-
-					<Route
-						exact path="/songs"
-						render={() => (
-							<React.Fragment>
-								{
-									this.state.pass !== false ?
-										(
-											<Songs
-												sector={this.state.user.sector || ""}
-											/>
-										) : (
-											<h2>Sign in to continue</h2>
-										)
-								}
-							</React.Fragment>
-						)}
-					/>
-
-					<Route
-						path="/songs/view/:songId"
-						render={(props) => {
-							const id = props.match.params.songId;
-							if (this.state.pass !== false) {
-								return (<ViewSong
-									sector={this.state.user.sector || ""}
-									id={id}
-								/>)
-							} else {
-								return (<h2>Sign in to continue</h2>)
-							}
-						}}
-					/>
+						<Route component={Lost} />
+					</Switch>
 				</div>
 				<Footer
 					currentTheme={theme}
 					appVer={this.state.appVer}
 					latestVer={this.state.latestVer}
 				/>
-			</Router>
+			</BrowserRouter>
 		);
 	}
 }

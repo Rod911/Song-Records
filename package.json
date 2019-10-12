@@ -10,6 +10,7 @@
     "react-scripts": "3.2.0",
     "react-router-dom": "^5.1.2",
     "react-dom": "^16.10.2",
+    "react-detect-offline": "^2.4.0",
     "react-sortable-hoc": "^1.10.1",
     "spectre.css": "^0.5.8"
   },
@@ -19,9 +20,10 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "deploy": "firebase deploy",
+    "build-deploy": "npm run build && npm run deploy",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "deploy": "firebase deploy",
     "lint:fix": "eslint src/**/*.js --fix"
   },
   "eslintConfig": {
