@@ -8,7 +8,7 @@ import createBrowserHistory from '../../history';
 export class AllSongs extends Component {
     constructor() {
         super();
-        this.songsPerPage = 1;
+        this.songsPerPage = 10;
     }
 
     state = {
@@ -88,6 +88,8 @@ export class AllSongs extends Component {
             const isFirstPage = page === 1;
             const prevPage = page - 1;
             const nextPage = page + 1;
+            const firstTabIndex = isFirstPage ? "-1" : "1";
+            const lastTabIndex = isLastPage ? "-1" : "1";
 
             let songDivs = [];
             songList.forEach(song => {
@@ -132,23 +134,14 @@ export class AllSongs extends Component {
                             {songDivs}
                         </div>
                     </div>
-                    {/* <div className="pagination p-centered">
-                        <div className="btn-group btn-group-block">
 
-                            <Link to={"/songs/all/" + prevPage} onClick={() => { this.setState({ page: prevPage }); this.loadPage(prevPage) }} className="btn btn-action btn-sm input-group-btn" disabled={isFirstPage}><i className="icon icon-arrow-left"></i></Link>
-                            {
-                                pageLinks
-                            }
-                            <Link to={"/songs/all/" + nextPage} onClick={() => { this.setState({ page: nextPage }); this.loadPage(nextPage) }} className="btn btn-action btn-sm input-group-btn" disabled={isLastPage}><i className="icon icon-arrow-right"></i></Link>
-                        </div>
-                    </div> */}
-                    <ul className="pagination">
-                        <li className="page-item">
-                            <Link to={"/songs/all/" + prevPage} onClick={() => { this.setState({ page: prevPage }); this.loadPage(prevPage) }} className="" disabled={isFirstPage}>Prev</Link>
+                    <ul className="pagination text-center" style={{justifyContent:"center"}}>
+                        <li className={isFirstPage ? "page-item disabled" : "page-item" }>
+                            <Link to={"/songs/all/" + prevPage} tabIndex={firstTabIndex} onClick={() => { this.setState({ page: prevPage }); this.loadPage(prevPage) }} className="" >Prev</Link>
                         </li>
                         {pageLinks}
-                        <li className="page-item">
-                            <Link to={"/songs/all/" + nextPage} onClick={() => { this.setState({ page: nextPage }); this.loadPage(nextPage) }} className="" disabled={isLastPage}>Next</Link>
+                        <li className={isLastPage ? "page-item disabled" : "page-item" }>
+                            <Link to={"/songs/all/" + nextPage} tabIndex={lastTabIndex} onClick={() => { this.setState({ page: nextPage }); this.loadPage(nextPage) }} className="" >Next</Link>
                         </li>
                     </ul>
 
