@@ -15,7 +15,7 @@
     "spectre.css": "^0.5.8"
   },
   "devDependencies": {
-    "firebase-tools": "~7.4.0"
+    "firebase-tools": "~7.6.0"
   },
   "scripts": {
     "start": "react-scripts start",
